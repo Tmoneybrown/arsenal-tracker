@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0c0d0a">
+  <meta name="description" content="Arsenal and wishlist: owned guns, ammo stockpile, and planned buys.">
+  <title>Arsenal &amp; Wishlist</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230c0d0a'/%3E%3Crect x='4' y='4' width='24' height='24' fill='none' stroke='%23d6c09a' stroke-width='2'/%3E%3Cpath d='M8 22 L16 8 L24 22' fill='none' stroke='%238b9a4b' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <p class="eyebrow">Owner log</p>
+      <h1>Arsenal &amp; Wishlist</h1>
+      <p class="tagline">Owned guns, ammo on hand, and the purchase list.</p>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Sections">
+    <div class="wrap nav-scroll">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#arsenal">Arsenal</a>
+      <a href="#ammo">Ammo</a>
+      <a href="#wishlist">Wishlist</a>
+      <a href="#carry">Carry</a>
+      <a href="#mag-map">Mag map</a>
+      <a href="#notes">Notes</a>
+    </div>
+  </nav>
+
+  <main id="content">
+    <p id="boot" class="boot wrap" role="status">Loading inventory…</p>
+    <div id="sections" class="wrap" hidden>
+      <section class="section" id="dashboard" aria-labelledby="dashboard-title">
+        <div class="section-head">
+          <p class="kicker">01</p>
+          <h2 id="dashboard-title">Dashboard</h2>
+        </div>
+        <div data-mount="dashboard"></div>
+      </section>
+
+      <section class="section" id="arsenal" aria-labelledby="arsenal-title">
+        <div class="section-head">
+          <p class="kicker">02</p>
+          <h2 id="arsenal-title">My Arsenal</h2>
+        </div>
+        <div data-mount="arsenal"></div>
+      </section>
+
+      <section class="section" id="ammo" aria-labelledby="ammo-title">
+        <div class="section-head">
+          <p class="kicker">03</p>
+          <h2 id="ammo-title">Ammo Stockpile</h2>
+        </div>
+        <div data-mount="ammo"></div>
+      </section>
+
+      <section class="section" id="wishlist" aria-labelledby="wishlist-title">
+        <div class="section-head">
+          <p class="kicker">04</p>
+          <h2 id="wishlist-title">Wishlist</h2>
+        </div>
+        <div data-mount="wishlist"></div>
+      </section>
+
+      <section class="section" id="carry" aria-labelledby="carry-title">
+        <div class="section-head">
+          <p class="kicker">05</p>
+          <h2 id="carry-title">Carry Gun</h2>
+        </div>
+        <div data-mount="carry"></div>
+      </section>
+
+      <section class="section" id="mag-map" aria-labelledby="mag-map-title">
+        <div class="section-head">
+          <p class="kicker">06</p>
+          <h2 id="mag-map-title">Mag &amp; Caliber Map</h2>
+        </div>
+        <div data-mount="mag-map"></div>
+      </section>
+
+      <section class="section" id="notes" aria-labelledby="notes-title">
+        <div class="section-head">
+          <p class="kicker">07</p>
+          <h2 id="notes-title">Notes &amp; Laws</h2>
+        </div>
+        <div data-mount="notes"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>All figures live in <code>data.json</code>. Unknown prices stay TBD.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

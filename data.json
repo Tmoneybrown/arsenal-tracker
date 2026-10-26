@@ -1,0 +1,407 @@
+{
+  "meta": {
+    "title": "Arsenal & Wishlist",
+    "tagline": "Owned guns, ammo on hand, and the purchase list.",
+    "ammoGoalDefault": 1000
+  },
+  "dashboard": {
+    "nextPlannedBuyId": "g17-build",
+    "knownTotal": {
+      "trailingPlus": true,
+      "note": "G17 low build plus the lowest SUB-2000 price. Alternates and TBD items are not included.",
+      "parts": [
+        {
+          "itemId": "g17-build",
+          "field": "priceLow",
+          "label": "G17 low build"
+        },
+        {
+          "itemId": "sub2000",
+          "field": "lowestOffer",
+          "label": "SUB-2000"
+        }
+      ]
+    }
+  },
+  "arsenal": [
+    {
+      "id": "taurus-g2",
+      "name": "Taurus Millennium G2",
+      "caliber": "9mm",
+      "role": "Cheap truck gun",
+      "status": "Owned",
+      "details": [
+        "No attachments",
+        "Reliability concerns",
+        "Own magazines"
+      ],
+      "needs": []
+    },
+    {
+      "id": "mossberg-88",
+      "name": "Mossberg 88",
+      "caliber": "12ga",
+      "action": "Pump",
+      "role": "Home defense",
+      "status": "Owned",
+      "details": [
+        "Quad rail forend",
+        "No sights or light yet"
+      ],
+      "needs": [
+        "Weapon light",
+        "Red dot or ghost ring",
+        "Sidesaddle"
+      ]
+    }
+  ],
+  "ammo": [
+    {
+      "caliber": "9mm",
+      "practice": 0,
+      "defensive": 0,
+      "goal": 1000,
+      "entered": false
+    },
+    {
+      "caliber": "12ga",
+      "practice": 0,
+      "defensive": 0,
+      "goal": 1000,
+      "entered": false
+    },
+    {
+      "caliber": "5.56",
+      "practice": 0,
+      "defensive": 0,
+      "goal": 1000,
+      "entered": false
+    },
+    {
+      "caliber": ".22LR",
+      "practice": 0,
+      "defensive": 0,
+      "goal": 1000,
+      "entered": false
+    }
+  ],
+  "wishlist": {
+    "tiers": [
+      {
+        "id": "tier-1",
+        "label": "Tier 1",
+        "name": "Rifle",
+        "items": [
+          {
+            "id": "ar15",
+            "kind": "item",
+            "name": "AR-15",
+            "caliber": "5.56",
+            "status": "Researching",
+            "price": null
+          }
+        ]
+      },
+      {
+        "id": "tier-2",
+        "label": "Tier 2",
+        "name": "Home defense",
+        "items": [
+          {
+            "id": "g17-build",
+            "kind": "build",
+            "name": "Glock 17 Gen 5 MOS build",
+            "shortName": "Glock 17 Gen 5 MOS",
+            "status": "Researching",
+            "planned": true,
+            "priceLow": 1983.11,
+            "priceRecommended": 2523.59,
+            "components": [
+              { "name": "Gun" },
+              { "name": "Faxon or Glock threaded barrel" },
+              { "name": "Suppressor-height sights" },
+              { "name": "Light: TLR-1 HL or Surefire X300U-A" },
+              { "name": "Red dot: Holosun 507C X2 or Trijicon RMR" },
+              { "name": "SilencerCo Omega 9K", "price": 749 }
+            ],
+            "priceNote": "Low and recommended figures are the full build totals. The only component with its own price on file is the SilencerCo Omega 9K at $749.",
+            "alternatives": [
+              {
+                "name": "Glock 34 Gen 5 MOS",
+                "priceLow": 1984.32,
+                "priceRecommended": 2512.98
+              },
+              {
+                "name": "Glock 47 MOS",
+                "priceLow": 2033.12,
+                "priceRecommended": 2523.59
+              },
+              {
+                "name": "Glock 19 Gen 5 MOS",
+                "priceLow": 2040.12,
+                "priceRecommended": 2523.59
+              }
+            ]
+          },
+          {
+            "id": "sub2000",
+            "kind": "offers",
+            "name": "Kel-Tec SUB-2000 Gen 3",
+            "summary": "9mm, 16.1 inch barrel, Glock 17 magazines. Both listings are 15-round Glock-mag rifles.",
+            "status": "Researching",
+            "offers": [
+              {
+                "vendor": "GrabAGun",
+                "price": 409.99,
+                "url": "https://grabagun.com/kel-tec-sub-2000-gen-3-9mm-16-1-barrel-15-rounds-glock-mags.html"
+              },
+              {
+                "vendor": "PSA",
+                "price": 439.99,
+                "url": "https://palmettostatearmory.com/kel-tec-sub2000-gen-3-9mm-16-1-15rd-rifle-black-sub2k9glkblk.html"
+              }
+            ]
+          },
+          {
+            "id": "m88-upgrades",
+            "kind": "item",
+            "name": "Mossberg 88 upgrades",
+            "status": "Researching",
+            "price": null,
+            "details": [
+              "Weapon light",
+              "Optic",
+              "Sidesaddle"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tier-3",
+        "label": "Tier 3",
+        "name": "Long-term",
+        "items": [
+          {
+            "id": "gun-safe",
+            "kind": "item",
+            "name": "Gun safe",
+            "status": "Researching",
+            "price": null
+          },
+          {
+            "id": "magazines",
+            "kind": "item",
+            "name": "Magazines",
+            "summary": "6–10 magazines per gun.",
+            "status": "Researching",
+            "price": null
+          },
+          {
+            "id": "trauma-kit",
+            "kind": "item",
+            "name": "Trauma kit",
+            "status": "Researching",
+            "price": null
+          },
+          {
+            "id": "spare-parts",
+            "kind": "item",
+            "name": "Spare parts and cleaning kits",
+            "status": "Researching",
+            "price": null
+          },
+          {
+            "id": "ear-eye",
+            "kind": "item",
+            "name": "Ear and eye protection",
+            "status": "Researching",
+            "price": null
+          }
+        ]
+      }
+    ],
+    "nonGlock": {
+      "title": "Non-Glock alternatives (won't share mags with the SUB-2000)",
+      "items": [
+        {
+          "name": "FN 509 Tactical",
+          "gunPrice": 599.99,
+          "buildEstimate": 1866
+        },
+        {
+          "name": "CZ P-10 F OR SR",
+          "gunPrice": 473.99,
+          "buildEstimate": 1740
+        },
+        {
+          "name": "Beretta APX A1 Tactical",
+          "gunPrice": 540.99,
+          "buildEstimate": 1807
+        },
+        {
+          "name": "Canik Mete SFT Pro",
+          "gunPrice": 624.99,
+          "buildEstimate": 1891
+        },
+        {
+          "name": "S&W M&P9 M2.0 threaded OR",
+          "gunPrice": 641,
+          "buildEstimate": 1962
+        }
+      ]
+    }
+  },
+  "carry": {
+    "summary": "Glock 19 Gen 5 MOS is the top pick: 15+1, and it shares magazines with the SUB-2000. Glock 43X MOS is the slimmer 10+1 option.",
+    "pricesNote": "Prices are not listed in this section.",
+    "contenders": [
+      {
+        "name": "Glock 19 Gen 5 MOS",
+        "capacity": "15+1",
+        "topPick": true,
+        "points": [
+          "Shares magazines with the SUB-2000",
+          "Top pick"
+        ]
+      },
+      {
+        "name": "Glock 43X MOS",
+        "capacity": "10+1",
+        "topPick": false,
+        "points": [
+          "Slimmer"
+        ]
+      }
+    ],
+    "alternatives": [
+      "SIG P365 XL / X-Macro",
+      "Glock 48 MOS",
+      "Springfield Hellcat Pro",
+      "S&W Shield Plus"
+    ]
+  },
+  "magMap": {
+    "intro": "Fewer groups means a simpler stockpile.",
+    "groups": [
+      {
+        "id": "glock-9",
+        "label": "Glock 9mm",
+        "tone": "olive",
+        "detail": "G17/G19/G47/G34 + SUB-2000"
+      },
+      {
+        "id": "taurus",
+        "label": "Taurus own mags",
+        "tone": "tan",
+        "detail": "Shares 9mm ammo"
+      },
+      {
+        "id": "twelve",
+        "label": "12ga shells",
+        "tone": "copper",
+        "detail": "Mossberg 88"
+      },
+      {
+        "id": "ar556",
+        "label": "5.56 AR",
+        "tone": "field",
+        "detail": "Future AR-15"
+      }
+    ],
+    "rows": [
+      {
+        "gun": "Glock 17 Gen 5 MOS",
+        "group": "glock-9",
+        "status": "Researching",
+        "caliber": "9mm",
+        "magazine": "Glock full-size",
+        "sharesMagsWith": "G19, G47, G34, SUB-2000",
+        "sharesAmmoWith": "Other 9mm guns"
+      },
+      {
+        "gun": "Glock 19 Gen 5 MOS",
+        "group": "glock-9",
+        "status": "Researching",
+        "caliber": "9mm",
+        "magazine": "Glock compact",
+        "sharesMagsWith": "G17, G47, G34, SUB-2000",
+        "sharesAmmoWith": "Other 9mm guns"
+      },
+      {
+        "gun": "Glock 47 MOS",
+        "group": "glock-9",
+        "status": "Researching",
+        "caliber": "9mm",
+        "magazine": "Glock full-size",
+        "sharesMagsWith": "G17, G19, G34, SUB-2000",
+        "sharesAmmoWith": "Other 9mm guns"
+      },
+      {
+        "gun": "Glock 34 Gen 5 MOS",
+        "group": "glock-9",
+        "status": "Researching",
+        "caliber": "9mm",
+        "magazine": "Glock full-size",
+        "sharesMagsWith": "G17, G19, G47, SUB-2000",
+        "sharesAmmoWith": "Other 9mm guns"
+      },
+      {
+        "gun": "Kel-Tec SUB-2000 Gen 3",
+        "group": "glock-9",
+        "status": "Researching",
+        "caliber": "9mm",
+        "magazine": "Glock 17",
+        "sharesMagsWith": "G17, G19, G47, G34",
+        "sharesAmmoWith": "Other 9mm guns"
+      },
+      {
+        "gun": "Taurus Millennium G2",
+        "group": "taurus",
+        "status": "Owned",
+        "caliber": "9mm",
+        "magazine": "Taurus Millennium G2",
+        "sharesMagsWith": "None",
+        "sharesAmmoWith": "Other 9mm guns"
+      },
+      {
+        "gun": "Mossberg 88",
+        "group": "twelve",
+        "status": "Owned",
+        "caliber": "12ga",
+        "magazine": "Tube",
+        "sharesMagsWith": "None",
+        "sharesAmmoWith": "Other 12ga"
+      },
+      {
+        "gun": "AR-15",
+        "group": "ar556",
+        "status": "Researching",
+        "caliber": "5.56",
+        "magazine": "AR-15 / STANAG",
+        "sharesMagsWith": "Other 5.56 AR-15s",
+        "sharesAmmoWith": "Other 5.56"
+      }
+    ]
+  },
+  "notes": {
+    "lastChecked": "Oct 26, 2026",
+    "items": [
+      {
+        "title": "NFA tax",
+        "text": "The NFA tax on suppressors, SBRs, SBSs, and AOWs is $0 since January 1, 2026 (One Big Beautiful Bill Act)."
+      },
+      {
+        "title": "Registration policy",
+        "text": "ATF non-enforcement of NFA registration for those items since October 9, 2026 is a policy, not a repeal."
+      },
+      {
+        "title": "Still required",
+        "text": "Form 4473 and NICS still apply."
+      },
+      {
+        "title": "Texas",
+        "text": "Texas allows suppressors."
+      }
+    ]
+  }
+}
