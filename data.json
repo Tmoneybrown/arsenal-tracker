@@ -55,103 +55,58 @@
       ]
     }
   ],
+  "gear": [
+    {
+      "id": "ear-pro",
+      "name": "Ear protection",
+      "brand": null,
+      "status": "Owned"
+    }
+  ],
   "ammo": [
     {
+      "gun": "Taurus Millennium G2",
       "caliber": "9mm",
-      "practice": 0,
-      "defensive": 0,
-      "goal": 1000,
-      "entered": false,
-      "plan": {
-        "covers": [
-          "Taurus G2 (owned)",
-          "Glock and SUB-2000 (wishlist, shared with the Taurus)"
-        ],
-        "loads": [
-          {
-            "role": "Defense",
-            "load": "Federal HST 124gr or Speer Gold Dot 124gr +P JHP",
-            "count": 0,
-            "goal": 1000,
-            "known": false
-          },
-          {
-            "role": "Range",
-            "load": "115gr or 124gr FMJ brass case (e.g. Blazer Brass, Federal American Eagle, Winchester White Box)",
-            "count": 0,
-            "goal": 1000,
-            "known": false
-          }
-        ]
-      }
+      "loads": [
+        {
+          "label": "Defense ammo",
+          "load": "Federal HST 124gr or Speer Gold Dot 124gr +P",
+          "count": 0,
+          "goal": 1000,
+          "known": false
+        },
+        {
+          "label": "Range ammo",
+          "load": "9mm 115/124gr FMJ brass case",
+          "count": 0,
+          "goal": 1000,
+          "known": false
+        }
+      ]
     },
     {
+      "gun": "Mossberg Maverick 88",
       "caliber": "12ga",
-      "practice": 0,
-      "defensive": 0,
-      "goal": 1000,
-      "entered": false,
-      "plan": {
-        "covers": [
-          "Mossberg Maverick 88 (owned)"
-        ],
-        "loads": [
-          {
-            "role": "Defense",
-            "load": "Federal Premium 00 Buck with FliteControl (8 pellet, reduced recoil, 2-3/4\")",
-            "alternate": "Hornady Critical Defense 00 Buck",
-            "count": 0,
-            "goal": 1000,
-            "known": false
-          },
-          {
-            "role": "Range",
-            "load": "Winchester Universal or Federal Top Gun #7.5/#8 birdshot, 2-3/4\"",
-            "count": 0,
-            "goal": 1000,
-            "known": false
-          }
-        ],
-        "notes": [
-          "Pattern some of the defense load at the range.",
-          "Birdshot is not for defense."
-        ]
-      }
-    },
-    {
-      "caliber": "5.56",
-      "practice": 0,
-      "defensive": 0,
-      "goal": 1000,
-      "entered": false,
-      "plan": {
-        "covers": [
-          "AR-15 (wishlist)"
-        ],
-        "loads": [
-          {
-            "role": "Defense",
-            "load": "Hornady 55gr or 75gr, or Federal Fusion 62gr",
-            "count": 0,
-            "goal": 1000,
-            "known": false
-          },
-          {
-            "role": "Range",
-            "load": "M193 55gr FMJ",
-            "count": 0,
-            "goal": 1000,
-            "known": false
-          }
-        ]
-      }
-    },
-    {
-      "caliber": ".22LR",
-      "practice": 0,
-      "defensive": 0,
-      "goal": 1000,
-      "entered": false
+      "loads": [
+        {
+          "label": "Defense ammo",
+          "load": "Federal FliteControl 00 Buck (alt Hornady Critical Defense)",
+          "count": 0,
+          "goal": 1000,
+          "known": false
+        },
+        {
+          "label": "Range ammo",
+          "load": "Winchester Universal / Federal Top Gun #7.5/#8",
+          "count": 0,
+          "goal": 1000,
+          "known": false
+        }
+      ],
+      "notes": [
+        "Pattern some of the defense load at the range.",
+        "Birdshot is not for defense."
+      ]
     }
   ],
   "wishlist": {
@@ -280,9 +235,9 @@
             "price": null
           },
           {
-            "id": "ear-eye",
+            "id": "eye-protection",
             "kind": "item",
-            "name": "Ear and eye protection",
+            "name": "Eye protection",
             "status": "Researching",
             "price": null
           }
