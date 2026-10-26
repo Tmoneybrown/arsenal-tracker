@@ -39,13 +39,13 @@
     },
     {
       "id": "mossberg-88",
-      "name": "Mossberg 88",
+      "name": "Mossberg Maverick 88",
       "caliber": "12ga",
       "action": "Pump",
       "role": "Home defense",
       "status": "Owned",
       "details": [
-        "Quad rail forend",
+        "Black Aces Tactical quad rail forend",
         "No sights or light yet"
       ],
       "needs": [
@@ -165,7 +165,7 @@
           {
             "id": "m88-upgrades",
             "kind": "item",
-            "name": "Mossberg 88 upgrades",
+            "name": "Maverick 88 upgrades",
             "status": "Researching",
             "price": null,
             "details": [
@@ -299,7 +299,7 @@
         "id": "twelve",
         "label": "12ga shells",
         "tone": "copper",
-        "detail": "Mossberg 88"
+        "detail": "Maverick 88"
       },
       {
         "id": "ar556",
@@ -364,7 +364,7 @@
         "sharesAmmoWith": "Other 9mm guns"
       },
       {
-        "gun": "Mossberg 88",
+        "gun": "Maverick 88",
         "group": "twelve",
         "status": "Owned",
         "caliber": "12ga",
