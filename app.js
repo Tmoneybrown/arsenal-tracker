@@ -187,8 +187,8 @@
       return (row.goal == null ? goal : Number(row.goal)) === goal;
     });
     var intro = sameGoal
-      ? "Practice and defensive are tracked separately. Each goal is " + formatCount(goal) + " rounds. Counts not entered yet stay at zero."
-      : "Practice and defensive are tracked separately. Each row uses its own goal.";
+      ? "Practice and defensive are tracked separately. Each goal is " + formatCount(goal) + " rounds. Counts not entered yet stay at zero. Recommended loads name a defense round and a range round for the owned guns and the planned calibers. Each of those loads also aims for " + formatCount(goal) + ", and the count is unknown, shown as 0."
+      : "Practice and defensive are tracked separately. Each row uses its own goal. Recommended loads name a defense round and a range round where a plan is entered.";
     return el("div", { class: "stack" }, [
       el("p", { class: "lead", text: intro }),
       el("div", { class: "stack" }, rows.map(function (row) {
@@ -233,8 +233,57 @@
         el("span", {}, ["Defensive ", el("strong", { text: state.entered ? formatCount(state.defensive) : "0" })]),
         el("span", {}, ["Goal ", el("strong", { text: formatCount(state.goal) })])
       ]));
+      if (row.plan) card.append(renderPlan(row.plan));
     }
     return card;
+  }
+
+  function renderPlan(plan) {
+    var loads = plan.loads || [];
+    if (!loads.length) return null;
+    return el("div", { class: "load-plan" }, [
+      el("p", { class: "needs-label", text: "Recommended loads" }),
+      plan.covers && plan.covers.length
+        ? el("p", { class: "prose", text: plan.covers.join(" · ") })
+        : null,
+      el("div", { class: "load-list" }, loads.map(renderLoad)),
+      plan.notes && plan.notes.length
+        ? el("ul", { class: "clean load-notes" }, plan.notes.map(function (note) {
+          return el("li", { text: note });
+        }))
+        : null
+    ]);
+  }
+
+  function renderLoad(load) {
+    var known = load.known === true;
+    var count = num(load.count);
+    var goal = load.goal == null ? 1000 : num(load.goal);
+    var pct = known && goal > 0 ? Math.min(100, (count / goal) * 100) : 0;
+    var role = load.role || "Load";
+    var roleClass = String(role).toLowerCase() === "range" ? "meter-practice" : "meter-defensive";
+    var tagClass = "tag tag-" + String(role).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    return el("div", { class: "load" }, [
+      el("div", { class: "meter-head" }, [
+        el("span", { class: tagClass, text: role }),
+        el("span", { class: "meter-tools" }, [
+          known ? null : el("span", { class: "tag tag-unknown", text: "Unknown" }),
+          el("span", { class: "meter-scale", text: (known ? formatCount(count) : "0") + " / " + formatCount(goal) })
+        ])
+      ]),
+      load.load ? el("p", { class: "load-name", text: load.load }) : null,
+      load.alternate ? el("p", { class: "note", text: "Alternate: " + load.alternate }) : null,
+      el("div", {
+        class: "meter",
+        role: "progressbar",
+        "aria-valuemin": "0",
+        "aria-valuemax": String(goal),
+        "aria-valuenow": String(known ? count : 0),
+        "aria-label": role + " rounds on hand versus goal"
+      }, [
+        el("span", { class: roleClass, style: "width:" + pct + "%" })
+      ])
+    ]);
   }
 
   function renderWishlist(data) {

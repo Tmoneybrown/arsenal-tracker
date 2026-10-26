@@ -296,7 +296,8 @@ h4 {
 }
 
 .tag-researching,
-.tag-olive {
+.tag-olive,
+.tag-range {
   color: var(--olive);
   background: #262d16;
   border-color: #6d7c3c;
@@ -304,6 +305,7 @@ h4 {
 
 .tag-saving,
 .tag-tan,
+.tag-defense,
 .tag-wishlist {
   color: #f3e6c8;
   background: #3a311c;
@@ -329,6 +331,7 @@ h4 {
 }
 
 .tag-not-entered,
+.tag-unknown,
 .tag-tbd {
   color: #d9d2c4;
   background: transparent;
@@ -428,6 +431,27 @@ h4 {
   gap: 0.45rem;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.load-plan {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line);
+}
+
+.load-list {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.75rem;
+}
+
+.load-name {
+  margin: 0.4rem 0 0;
+  color: var(--ink);
+}
+
+.load-notes {
+  margin-top: 0.75rem;
 }
 
 .ammo-compact {
