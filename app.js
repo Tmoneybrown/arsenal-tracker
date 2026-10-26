@@ -612,31 +612,54 @@
 
   function watchNav() {
     var links = Array.prototype.slice.call(document.querySelectorAll(".nav a"));
-    var sectionsById = {};
-    links.forEach(function (link) {
-      var id = (link.getAttribute("href") || "").slice(1);
-      var section = document.getElementById(id);
-      if (section) sectionsById[id] = section;
-    });
-    if (!("IntersectionObserver" in window)) {
-      if (links[0]) links[0].setAttribute("aria-current", "location");
-      return;
+    var nav = document.querySelector(".nav");
+
+    function sectionFor(link) {
+      return document.getElementById((link.getAttribute("href") || "").slice(1));
     }
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        links.forEach(function (link) {
-          if (link.getAttribute("href") === "#" + entry.target.id) {
-            link.setAttribute("aria-current", "location");
-          } else {
-            link.removeAttribute("aria-current");
-          }
-        });
+
+    function mark(id) {
+      links.forEach(function (link) {
+        if ((link.getAttribute("href") || "") === "#" + id) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
       });
-    }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
-    Object.keys(sectionsById).forEach(function (id) {
-      observer.observe(sectionsById[id]);
+    }
+
+    function currentId() {
+      var offset = (nav ? nav.offsetHeight : 0) + 24;
+      var y = window.scrollY + offset;
+      var id = (links[0] && (links[0].getAttribute("href") || "").slice(1)) || "";
+      links.forEach(function (link) {
+        var section = sectionFor(link);
+        if (section && section.offsetTop <= y) id = section.id;
+      });
+      return id;
+    }
+
+    links.forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        var section = sectionFor(link);
+        if (!section) return;
+        event.preventDefault();
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        section.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+        if (history.pushState) history.pushState(null, "", link.getAttribute("href"));
+        mark(section.id);
+      });
     });
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        ticking = false;
+        mark(currentId());
+      });
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
   }
 
   function showBoot(message, isError) {

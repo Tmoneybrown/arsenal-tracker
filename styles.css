@@ -239,6 +239,13 @@ h4 {
   gap: 0.8rem;
 }
 
+.stack > *,
+.cards > *,
+.stat-grid > *,
+.compare > * {
+  min-width: 0;
+}
+
 .stat-grid {
   margin-bottom: 0.9rem;
 }
@@ -527,10 +534,13 @@ ul.clean li + li {
 }
 
 .table-scroll {
+  display: block;
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--line);
   background: var(--card);
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -647,7 +657,7 @@ tr:last-child td {
 }
 
 .site-footer {
-  padding: 1.5rem 0 2.5rem;
+  padding: 1.5rem 0 calc(100vh - 8rem);
   color: var(--faint);
   font-size: 0.92rem;
 }
