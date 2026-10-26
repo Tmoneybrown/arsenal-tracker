@@ -36,6 +36,8 @@ Each caliber has practice rounds, defensive rounds, a goal, and an `entered` fla
 
 The bar is practice plus defensive, against that row's `goal` (default 1,000 via `meta.ammoGoalDefault`).
 
+A caliber can also carry a `plan` for the recommended defense and range loads. `covers` names the guns that share it. Each load has `role` (`Defense` or `Range`), `load`, an optional `alternate`, `count`, `goal`, and `known`. While `known` is `false`, the page shows `0` and **Unknown**. Set `known` to `true` once the count is real. `notes` are plain sentences under that caliber's loads.
+
 ### Owned guns
 
 Add or edit objects in `arsenal`. `status` should be `"Owned"` for guns on hand. `needs` is a list of missing setup items; use `[]` when there is nothing outstanding.
