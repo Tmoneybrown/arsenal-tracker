@@ -94,13 +94,6 @@
     });
     var next = findItem(data, data.dashboard && data.dashboard.nextPlannedBuyId);
     var total = knownTotal(data);
-    var ammoRows = data.ammo || [];
-    var enteredCount = ammoRows.filter(function (row) {
-      return ammoState(row, goalDefault(data)).entered;
-    }).length;
-    var ammoSummary = enteredCount === 0
-      ? "Counts are not entered yet."
-      : enteredCount + " of " + ammoRows.length + " calibers have counts entered.";
 
     var grid = el("div", { class: "stat-grid" }, [
       el("article", { class: "card" }, [
@@ -138,26 +131,29 @@
       ])
     ]);
 
-    var ammoCard = el("article", { class: "card" }, [
-      el("div", { class: "card-top" }, [
-        el("h3", { text: "Ammo vs " + formatCount(goalDefault(data)) + "-round goal" }),
-        enteredCount === 0 ? el("span", { class: "tag tag-not-entered", text: "Not entered" }) : null
-      ]),
-      el("p", { class: "prose", text: ammoSummary })
-    ]);
-    ammoRows.forEach(function (row) {
-      ammoCard.append(renderMeter(row, goalDefault(data), { compact: true }));
-    });
-
-    return el("div", { class: "stack" }, [grid, ammoCard]);
+    return grid;
   }
 
   function renderArsenal(data) {
     var guns = data.arsenal || [];
-    if (!guns.length) {
+    var gear = data.gear || [];
+    if (!guns.length && !gear.length) {
       return el("p", { class: "prose", text: "No owned guns entered." });
     }
-    return el("div", { class: "cards cols-2" }, guns.map(renderGun));
+    return el("div", { class: "cards cols-2" }, guns.map(renderGun).concat(gear.map(renderGear)));
+  }
+
+  function renderGear(item) {
+    return el("article", { class: "card" }, [
+      el("div", { class: "card-top" }, [
+        el("h3", { class: "card-title", text: item.name }),
+        statusTag(item.status)
+      ]),
+      el("p", { class: "meta-line" }, [
+        "Brand ",
+        item.brand ? el("span", { text: item.brand }) : el("span", { class: "tag tag-tbd", text: "TBD" })
+      ])
+    ]);
   }
 
   function renderGun(gun) {
@@ -181,108 +177,55 @@
   }
 
   function renderAmmo(data) {
-    var rows = data.ammo || [];
-    var goal = goalDefault(data);
-    var sameGoal = rows.every(function (row) {
-      return (row.goal == null ? goal : Number(row.goal)) === goal;
-    });
-    var intro = sameGoal
-      ? "Practice and defensive are tracked separately. Each goal is " + formatCount(goal) + " rounds. Counts not entered yet stay at zero. Recommended loads name a defense round and a range round for the owned guns and the planned calibers. Each of those loads also aims for " + formatCount(goal) + ", and the count is unknown, shown as 0."
-      : "Practice and defensive are tracked separately. Each row uses its own goal. Recommended loads name a defense round and a range round where a plan is entered.";
-    return el("div", { class: "stack" }, [
-      el("p", { class: "lead", text: intro }),
-      el("div", { class: "stack" }, rows.map(function (row) {
-        return renderMeter(row, goal, { compact: false });
-      }))
-    ]);
-  }
-
-  function renderMeter(row, defaultGoal, options) {
-    var state = ammoState(row, defaultGoal);
-    var practicePct = state.entered && state.goal > 0 ? Math.min(100, (state.practice / state.goal) * 100) : 0;
-    var defensivePct = state.entered && state.goal > 0
-      ? Math.min(100 - practicePct, (state.defensive / state.goal) * 100)
-      : 0;
-    var fraction = (state.entered ? formatCount(state.onHand) : "0") + " / " + formatCount(state.goal);
-    var card = options.compact
-      ? el("div", { class: "ammo-compact" })
-      : el("article", { class: "card" });
-    card.append(
-      el("div", { class: "meter-head" }, [
-        el("strong", { text: row.caliber }),
-        el("span", { class: "meter-tools" }, [
-          state.entered ? null : el("span", { class: "tag tag-not-entered", text: "Not entered" }),
-          el("span", { class: "meter-scale", text: fraction })
-        ])
-      ]),
-      el("div", {
-        class: "meter",
-        role: "progressbar",
-        "aria-valuemin": "0",
-        "aria-valuemax": String(state.goal),
-        "aria-valuenow": String(state.entered ? state.onHand : 0),
-        "aria-label": row.caliber + " on hand versus goal"
-      }, [
-        el("span", { class: "meter-practice", style: "width:" + practicePct + "%" }),
-        el("span", { class: "meter-defensive", style: "width:" + defensivePct + "%" })
-      ])
-    );
-    if (!options.compact) {
-      card.append(el("div", { class: "split-counts" }, [
-        el("span", {}, ["Practice ", el("strong", { text: state.entered ? formatCount(state.practice) : "0" })]),
-        el("span", {}, ["Defensive ", el("strong", { text: state.entered ? formatCount(state.defensive) : "0" })]),
-        el("span", {}, ["Goal ", el("strong", { text: formatCount(state.goal) })])
-      ]));
-      if (row.plan) card.append(renderPlan(row.plan));
+    var guns = data.ammo || [];
+    if (!guns.length) {
+      return el("p", { class: "lead", text: "No owned guns to track." });
     }
-    return card;
+    return el("div", { class: "stack" }, guns.map(renderAmmoGun));
   }
 
-  function renderPlan(plan) {
-    var loads = plan.loads || [];
-    if (!loads.length) return null;
-    return el("div", { class: "load-plan" }, [
-      el("p", { class: "needs-label", text: "Recommended loads" }),
-      plan.covers && plan.covers.length
-        ? el("p", { class: "prose", text: plan.covers.join(" · ") })
-        : null,
-      el("div", { class: "load-list" }, loads.map(renderLoad)),
-      plan.notes && plan.notes.length
-        ? el("ul", { class: "clean load-notes" }, plan.notes.map(function (note) {
+  function renderAmmoGun(gun) {
+    var loads = gun.loads || [];
+    return el("article", { class: "card" }, [
+      el("div", { class: "card-top" }, [
+        el("h3", { class: "card-title", text: gun.gun || "Gun" }),
+        gun.caliber ? el("span", { class: "tag tag-tan", text: gun.caliber }) : null
+      ]),
+      el("div", { class: "load-list" }, loads.map(renderAmmoBar)),
+      gun.notes && gun.notes.length
+        ? el("ul", { class: "clean load-notes" }, gun.notes.map(function (note) {
           return el("li", { text: note });
         }))
         : null
     ]);
   }
 
-  function renderLoad(load) {
+  function renderAmmoBar(load) {
     var known = load.known === true;
     var count = num(load.count);
     var goal = load.goal == null ? 1000 : num(load.goal);
     var pct = known && goal > 0 ? Math.min(100, (count / goal) * 100) : 0;
-    var role = load.role || "Load";
-    var roleClass = String(role).toLowerCase() === "range" ? "meter-practice" : "meter-defensive";
-    var tagClass = "tag tag-" + String(role).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    var label = load.label || "Ammo";
+    var fill = /range/i.test(label) ? "meter-practice" : "meter-defensive";
     return el("div", { class: "load" }, [
       el("div", { class: "meter-head" }, [
-        el("span", { class: tagClass, text: role }),
+        el("strong", { text: label }),
         el("span", { class: "meter-tools" }, [
           known ? null : el("span", { class: "tag tag-unknown", text: "Unknown" }),
           el("span", { class: "meter-scale", text: (known ? formatCount(count) : "0") + " / " + formatCount(goal) })
         ])
       ]),
-      load.load ? el("p", { class: "load-name", text: load.load }) : null,
-      load.alternate ? el("p", { class: "note", text: "Alternate: " + load.alternate }) : null,
       el("div", {
         class: "meter",
         role: "progressbar",
         "aria-valuemin": "0",
         "aria-valuemax": String(goal),
         "aria-valuenow": String(known ? count : 0),
-        "aria-label": role + " rounds on hand versus goal"
+        "aria-label": label + " versus goal"
       }, [
-        el("span", { class: roleClass, style: "width:" + pct + "%" })
-      ])
+        el("span", { class: fill, style: "width:" + pct + "%" })
+      ]),
+      load.load ? el("p", { class: "load-name", text: load.load }) : null
     ]);
   }
 
@@ -593,24 +536,6 @@
       }
     }
     return null;
-  }
-
-  function ammoState(row, defaultGoal) {
-    var practice = num(row.practice);
-    var defensive = num(row.defensive);
-    var goal = row.goal == null ? defaultGoal : num(row.goal);
-    return {
-      practice: practice,
-      defensive: defensive,
-      goal: goal,
-      entered: row.entered === true,
-      onHand: practice + defensive
-    };
-  }
-
-  function goalDefault(data) {
-    var value = data.meta && data.meta.ammoGoalDefault;
-    return isFiniteNumber(value) ? Number(value) : 1000;
   }
 
   function formatMoney(value, options) {
