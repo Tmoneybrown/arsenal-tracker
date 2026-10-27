@@ -816,6 +816,7 @@
   }
 
   function safeUrl(url) {
+    if (typeof url !== "string" || !url) return null;
     try {
       var parsed = new URL(url, window.location.href);
       if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href;
