@@ -32,7 +32,7 @@ Owned gear that is not a gun goes in `gear` and shows in My Accessories. Use `"b
 
 ### Wishlist
 
-`wishlist.tiers` is the priority list. The page gives each tier its own heading and one compact row per item: name (linked when a `url` or offer link exists), status, the known price on the right, and a one-line note. Longer summaries, components, offers, and alternate pistols open from a Details toggle. A build row uses `priceLow`. An offers row uses the lowest price. Each group ends with a subtotal of those known prices, with a plus when that group still has TBD prices.
+`wishlist.tiers` is the priority list. The page gives each tier its own heading and one compact row per item: name (linked when a `url` or offer link exists), status, the known price on the right, and a one-line note. Pistol builds are not repeated in the tier; they are listed under **Pistols** with the non-Glock pistols and any carry contender that is also named on the wishlist. Longer summaries, components, offers, and alternate build totals open from a Details toggle. A build row uses `priceLow`. An offers row uses the lowest price. Each group ends with a subtotal of those known prices, with a plus when that group still has TBD prices. Alternate pistols stay visible but are not added into the Pistols subtotal.
 
 - `"kind": "item"` — a single price. Use `null` when the price is unknown (shown as TBD). Optional `url` is a link. `status` is `Researching`, `Saving`, or `Bought`.
 - `"kind": "build"` — low and recommended totals, a component list, and alternate pistols. Put a component `price` only when you actually have that number.
@@ -40,7 +40,7 @@ Owned gear that is not a gun goes in `gear` and shows in My Accessories. Use `"b
 
 `wishlist.knownTotal.parts` is the known-price total at the top of the wishlist. Each part names an item `id` and a field: `price`, `priceLow`, `priceRecommended`, or `lowestOffer`. A missing price makes the whole total TBD. `trailingPlus` adds a plus when other items are still unknown.
 
-`wishlist.nonGlock` stays its own group under the tiers. `gunPrice` is the row price; `buildEstimate` is the one-line note, shown with a tilde because those build totals are approximate.
+`wishlist.nonGlock` is not a separate heading. Those pistols are rows in Pistols. `gunPrice` is the row price. The note says they do not share magazines with the SUB-2000, and includes `buildEstimate` with a tilde because those build totals are approximate.
 
 ### Carry, mag map, and notes
 

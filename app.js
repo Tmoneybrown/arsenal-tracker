@@ -195,23 +195,79 @@
     var total = renderKnownTotal(data);
     if (total) root.append(total);
     (data.wishlist.tiers || []).forEach(function (tier) {
+      var items = (tier.items || []).filter(function (item) { return !isPistolWishItem(item); });
+      if (!items.length) return;
       root.append(renderWishGroup(
         tier.label + " " + tier.name,
-        tier.items || [],
+        items,
         itemKnownPrice,
         renderWishRow
       ));
     });
-    var block = data.wishlist.nonGlock;
-    if (block) {
-      root.append(renderWishGroup(
-        block.title,
-        block.items || [],
-        function (item) { return isFiniteNumber(item.gunPrice) ? item.gunPrice : null; },
-        renderNonGlockRow
-      ));
+    var pistols = collectPistols(data);
+    if (pistols.length) {
+      root.append(renderWishGroup("Pistols", pistols, pistolRowPrice, renderPistolRow));
     }
     return root;
+  }
+
+  function isPistolWishItem(item) {
+    if (!item || item.kind !== "build") return false;
+    var name = ((item.shortName || "") + " " + (item.name || "")).toLowerCase();
+    return !/rifle|shotgun|carbine|ar-15|sub-2000/.test(name);
+  }
+
+  function collectPistols(data) {
+    var builds = [];
+    var alts = [];
+    (data.wishlist.tiers || []).forEach(function (tier) {
+      (tier.items || []).forEach(function (item) {
+        if (!isPistolWishItem(item)) return;
+        builds.push(item);
+        (item.alternatives || []).forEach(function (alt) {
+          if (!alt || !alt.name) return;
+          alts.push({
+            kind: "pistol-alt",
+            name: alt.name,
+            priceLow: alt.priceLow,
+            priceRecommended: alt.priceRecommended,
+            alternateTo: item.shortName || item.name,
+            excludeFromSubtotal: true
+          });
+        });
+      });
+    });
+    ((data.carry && data.carry.contenders) || []).forEach(function (gun) {
+      if (!gun || !gun.name) return;
+      var match = null;
+      alts.concat(builds).forEach(function (row) {
+        if (sameGun(row.name, gun.name) || sameGun(row.shortName, gun.name)) match = row;
+      });
+      if (match) match.carry = gun;
+    });
+    alts.sort(function (a, b) {
+      var ap = a.carry && a.carry.topPick ? 0 : 1;
+      var bp = b.carry && b.carry.topPick ? 0 : 1;
+      return ap - bp;
+    });
+    var others = ((data.wishlist.nonGlock && data.wishlist.nonGlock.items) || []).map(function (item) {
+      return {
+        kind: "non-glock",
+        name: item.name,
+        gunPrice: item.gunPrice,
+        buildEstimate: item.buildEstimate
+      };
+    });
+    return builds.concat(alts, others);
+  }
+
+  function pistolRowPrice(item) {
+    if (!item || item.excludeFromSubtotal) return null;
+    if (item.kind === "build" || item.kind === "pistol-alt") {
+      return isFiniteNumber(item.priceLow) ? item.priceLow : null;
+    }
+    if (item.kind === "non-glock") return isFiniteNumber(item.gunPrice) ? item.gunPrice : null;
+    return itemKnownPrice(item);
   }
 
   function renderWishGroup(title, items, priceOf, renderRow) {
@@ -233,6 +289,7 @@
     var known = 0;
     var missing = false;
     items.forEach(function (item) {
+      if (item && item.excludeFromSubtotal) return;
       var amount = priceOf(item);
       if (amount == null) {
         missing = true;
@@ -296,10 +353,52 @@
     ]);
   }
 
+  function renderPistolRow(item) {
+    if (item.kind === "build") return renderWishRow(item);
+    if (item.kind === "pistol-alt") return renderPistolAltRow(item);
+    return renderNonGlockRow(item);
+  }
+
+  function renderPistolAltRow(item) {
+    var price = isFiniteNumber(item.priceLow) ? item.priceLow : null;
+    var note = pistolAltNote(item);
+    return el("article", { class: "wish-row" }, [
+      el("div", { class: "wish-id" }, [
+        el("span", { class: "wish-name", text: item.name }),
+        item.carry && item.carry.topPick ? el("span", { class: "badge badge-olive", text: "Top pick" }) : null
+      ]),
+      el("div", { class: "wish-price" }, [
+        price == null
+          ? el("span", { class: "tag tag-tbd", text: "TBD" })
+          : el("span", { class: "price", text: formatMoney(price) }),
+        price == null ? null : el("span", { class: "price-label", text: "Low" })
+      ]),
+      note ? el("p", { class: "wish-note", text: note }) : null,
+      el("details", { class: "wish-details" }, [
+        el("summary", { text: "Details" }),
+        el("div", { class: "wish-detail-body" }, [
+          el("div", { class: "price-pair" }, [
+            priceBlock("Low", item.priceLow),
+            priceBlock("Recommended", item.priceRecommended)
+          ])
+        ])
+      ])
+    ]);
+  }
+
+  function pistolAltNote(item) {
+    var bits = [];
+    if (item.carry && item.carry.topPick) bits.push("Carry top pick");
+    else if (item.carry) bits.push("Carry option");
+    if (item.alternateTo) bits.push("Alternate to the " + item.alternateTo);
+    return bits.join(". ") + (bits.length ? "." : "");
+  }
+
   function renderNonGlockRow(item) {
-    var note = isFiniteNumber(item.buildEstimate)
-      ? "Approx. build " + formatMoney(item.buildEstimate, { approx: true })
-      : "";
+    var note = "Doesn't share mags with the SUB-2000.";
+    if (isFiniteNumber(item.buildEstimate)) {
+      note += " Approx. build " + formatMoney(item.buildEstimate, { approx: true }) + ".";
+    }
     return el("article", { class: "wish-row" }, [
       el("div", { class: "wish-id" }, [
         el("span", { class: "wish-name", text: item.name })
@@ -310,7 +409,7 @@
           : el("span", { class: "tag tag-tbd", text: "TBD" }),
         isFiniteNumber(item.gunPrice) ? el("span", { class: "price-label", text: "Gun" }) : null
       ]),
-      note ? el("p", { class: "wish-note", text: note }) : null
+      el("p", { class: "wish-note", text: note })
     ]);
   }
 
