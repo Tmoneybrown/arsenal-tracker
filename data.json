@@ -311,7 +311,7 @@
         "id": "glock-9",
         "label": "Glock 9mm",
         "tone": "olive",
-        "detail": "G19/G47/G34 + SUB-2000"
+        "detail": "G19/G47 + SUB-2000"
       },
       {
         "id": "taurus",
@@ -339,8 +339,7 @@
         "status": "Researching",
         "caliber": "9mm",
         "magazine": "Glock compact",
-        "sharesMagsWith": "G47, G34, SUB-2000",
-        "sharesAmmoWith": "Other 9mm guns"
+        "sharesMagsWith": "G47, SUB-2000"
       },
       {
         "gun": "Glock 47 MOS",
@@ -348,17 +347,7 @@
         "status": "Researching",
         "caliber": "9mm",
         "magazine": "Glock full-size",
-        "sharesMagsWith": "G19, G34, SUB-2000",
-        "sharesAmmoWith": "Other 9mm guns"
-      },
-      {
-        "gun": "Glock 34 Gen 5 MOS",
-        "group": "glock-9",
-        "status": "Researching",
-        "caliber": "9mm",
-        "magazine": "Glock full-size",
-        "sharesMagsWith": "G19, G47, SUB-2000",
-        "sharesAmmoWith": "Other 9mm guns"
+        "sharesMagsWith": "G19, SUB-2000"
       },
       {
         "gun": "Kel-Tec SUB-2000 Gen 3",
@@ -366,8 +355,7 @@
         "status": "Researching",
         "caliber": "9mm",
         "magazine": "Glock 17",
-        "sharesMagsWith": "G19, G47, G34",
-        "sharesAmmoWith": "Other 9mm guns"
+        "sharesMagsWith": "G19, G47"
       },
       {
         "gun": "Taurus Millennium G2",
@@ -375,8 +363,7 @@
         "status": "Owned",
         "caliber": "9mm",
         "magazine": "Taurus Millennium G2",
-        "sharesMagsWith": "None",
-        "sharesAmmoWith": "Other 9mm guns"
+        "sharesMagsWith": "None"
       },
       {
         "gun": "Maverick 88",
@@ -384,8 +371,7 @@
         "status": "Owned",
         "caliber": "12ga",
         "magazine": "Tube",
-        "sharesMagsWith": "None",
-        "sharesAmmoWith": "Other 12ga"
+        "sharesMagsWith": "None"
       },
       {
         "gun": "AR-15",
@@ -393,8 +379,7 @@
         "status": "Researching",
         "caliber": "5.56",
         "magazine": "AR-15 / STANAG",
-        "sharesMagsWith": "Other 5.56 AR-15s",
-        "sharesAmmoWith": "Other 5.56"
+        "sharesMagsWith": "Other 5.56 AR-15s"
       }
     ]
   },
