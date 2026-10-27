@@ -92,6 +92,27 @@
     }
   ],
   "wishlist": {
+    "knownTotal": {
+      "trailingPlus": true,
+      "note": "G47 low build, the lowest SUB-2000 price, and the trauma kit. Alternates and TBD items are not included.",
+      "parts": [
+        {
+          "itemId": "g47-build",
+          "field": "priceLow",
+          "label": "G47 low build"
+        },
+        {
+          "itemId": "sub2000",
+          "field": "lowestOffer",
+          "label": "SUB-2000"
+        },
+        {
+          "itemId": "trauma-kit",
+          "field": "price",
+          "label": "Trauma kit"
+        }
+      ]
+    },
     "tiers": [
       {
         "id": "tier-1",
@@ -114,33 +135,28 @@
         "name": "Home defense",
         "items": [
           {
-            "id": "g17-build",
+            "id": "g47-build",
             "kind": "build",
-            "name": "Glock 17 Gen 5 MOS build",
-            "shortName": "Glock 17 Gen 5 MOS",
+            "name": "Glock 47 MOS build",
+            "shortName": "Glock 47 MOS",
             "status": "Researching",
             "planned": true,
-            "priceLow": 1983.11,
+            "priceLow": 2033.12,
             "priceRecommended": 2523.59,
             "components": [
-              { "name": "Gun" },
+              { "name": "Gun", "price": 620 },
               { "name": "Faxon or Glock threaded barrel" },
               { "name": "Suppressor-height sights" },
               { "name": "Light: TLR-1 HL or Surefire X300U-A" },
               { "name": "Red dot: Holosun 507C X2 or Trijicon RMR" },
               { "name": "SilencerCo Omega 9K", "price": 749 }
             ],
-            "priceNote": "Low and recommended figures are the full build totals. The only component with its own price on file is the SilencerCo Omega 9K at $749.",
+            "priceNote": "Low and recommended figures are the full Glock 47 MOS build totals. The gun line is the current street price for a Glock 47 MOS (PA475S203MOS): $620 at dealers in October 2026, MSRP $745. The SilencerCo Omega 9K stays $749. Other parts are TBD, so the build totals are not the sum of those two lines.",
             "alternatives": [
               {
                 "name": "Glock 34 Gen 5 MOS",
                 "priceLow": 1984.32,
                 "priceRecommended": 2512.98
-              },
-              {
-                "name": "Glock 47 MOS",
-                "priceLow": 2033.12,
-                "priceRecommended": 2523.59
               },
               {
                 "name": "Glock 19 Gen 5 MOS",
@@ -205,9 +221,11 @@
           {
             "id": "trauma-kit",
             "kind": "item",
-            "name": "Trauma kit",
+            "name": "Trauma kit: North American Rescue IPOK (Individual Patrol Officer Kit)",
+            "summary": "Compact vacuum-sealed bleed kit: C-A-T tourniquet, wound packing gauze, 4in ETD trauma dressing, nitrile gloves. $44.99-$57.99.",
             "status": "Researching",
-            "price": null
+            "price": 57.99,
+            "url": "https://www.narescue.com/individual-patrol-officer-kit.html"
           },
           {
             "id": "spare-parts",
@@ -293,7 +311,7 @@
         "id": "glock-9",
         "label": "Glock 9mm",
         "tone": "olive",
-        "detail": "G17/G19/G47/G34 + SUB-2000"
+        "detail": "G19/G47/G34 + SUB-2000"
       },
       {
         "id": "taurus",
@@ -316,21 +334,12 @@
     ],
     "rows": [
       {
-        "gun": "Glock 17 Gen 5 MOS",
-        "group": "glock-9",
-        "status": "Researching",
-        "caliber": "9mm",
-        "magazine": "Glock full-size",
-        "sharesMagsWith": "G19, G47, G34, SUB-2000",
-        "sharesAmmoWith": "Other 9mm guns"
-      },
-      {
         "gun": "Glock 19 Gen 5 MOS",
         "group": "glock-9",
         "status": "Researching",
         "caliber": "9mm",
         "magazine": "Glock compact",
-        "sharesMagsWith": "G17, G47, G34, SUB-2000",
+        "sharesMagsWith": "G47, G34, SUB-2000",
         "sharesAmmoWith": "Other 9mm guns"
       },
       {
@@ -339,7 +348,7 @@
         "status": "Researching",
         "caliber": "9mm",
         "magazine": "Glock full-size",
-        "sharesMagsWith": "G17, G19, G34, SUB-2000",
+        "sharesMagsWith": "G19, G34, SUB-2000",
         "sharesAmmoWith": "Other 9mm guns"
       },
       {
@@ -348,7 +357,7 @@
         "status": "Researching",
         "caliber": "9mm",
         "magazine": "Glock full-size",
-        "sharesMagsWith": "G17, G19, G47, SUB-2000",
+        "sharesMagsWith": "G19, G47, SUB-2000",
         "sharesAmmoWith": "Other 9mm guns"
       },
       {
@@ -357,7 +366,7 @@
         "status": "Researching",
         "caliber": "9mm",
         "magazine": "Glock 17",
-        "sharesMagsWith": "G17, G19, G47, G34",
+        "sharesMagsWith": "G19, G47, G34",
         "sharesAmmoWith": "Other 9mm guns"
       },
       {

@@ -192,6 +192,8 @@
 
   function renderWishlist(data) {
     var root = el("div", {});
+    var total = renderKnownTotal(data);
+    if (total) root.append(total);
     (data.wishlist.tiers || []).forEach(function (tier) {
       var items = tier.items || [];
       var wide = items.some(function (item) { return item.kind === "build"; });
@@ -220,6 +222,7 @@
       item.caliber ? el("p", { class: "meta-line", text: item.caliber }) : null,
       el("p", { class: "price-line" }, [moneyNode(item.price)]),
       item.summary ? el("p", { class: "prose", text: item.summary }) : null,
+      itemLink(item.url),
       item.details && item.details.length ? list(item.details) : null
     ]);
   }
@@ -419,6 +422,86 @@
     ]);
   }
 
+  function renderKnownTotal(data) {
+    var spec = data.wishlist && data.wishlist.knownTotal;
+    if (!spec || !spec.parts) return null;
+    var total = knownTotal(data);
+    return el("article", { class: "card" }, [
+      el("span", { class: "price-label", text: "Wishlist total of known prices" }),
+      total.complete
+        ? el("span", {
+          class: "stat-value",
+          "data-known-total": "true",
+          text: formatMoney(total.amount, { plus: total.plus })
+        })
+        : el("span", { class: "tag tag-tbd", text: "TBD" }),
+      total.breakdown ? el("p", { class: "note", text: total.breakdown }) : null,
+      spec.note ? el("p", { class: "note", text: spec.note }) : null
+    ]);
+  }
+
+  function knownTotal(data) {
+    var spec = data.wishlist && data.wishlist.knownTotal;
+    if (!spec || !spec.parts) return { complete: false, amount: null, plus: false, breakdown: "" };
+    var parts = [];
+    for (var i = 0; i < spec.parts.length; i += 1) {
+      var part = spec.parts[i];
+      var amount = partAmount(data, part);
+      if (amount == null) return { complete: false, amount: null, plus: !!spec.trailingPlus, breakdown: "" };
+      parts.push({ label: part.label, amount: amount });
+    }
+    var cents = parts.reduce(function (sum, part) {
+      return sum + Math.round(part.amount * 100);
+    }, 0);
+    return {
+      complete: true,
+      amount: cents / 100,
+      plus: !!spec.trailingPlus,
+      breakdown: parts.map(function (part) {
+        return part.label + " " + formatMoney(part.amount);
+      }).join(" + ")
+    };
+  }
+
+  function partAmount(data, part) {
+    var item = findItem(data, part.itemId);
+    if (!item) return null;
+    if (part.field === "priceLow" || part.field === "priceRecommended" || part.field === "price") {
+      return isFiniteNumber(item[part.field]) ? Number(item[part.field]) : null;
+    }
+    if (part.field === "lowestOffer") {
+      var prices = (item.offers || []).map(function (offer) { return offer.price; }).filter(isFiniteNumber);
+      if (!prices.length) return null;
+      return Math.min.apply(null, prices);
+    }
+    return null;
+  }
+
+  function findItem(data, id) {
+    if (!id) return null;
+    var tiers = (data.wishlist && data.wishlist.tiers) || [];
+    for (var i = 0; i < tiers.length; i += 1) {
+      var items = tiers[i].items || [];
+      for (var j = 0; j < items.length; j += 1) {
+        if (items[j].id === id) return items[j];
+      }
+    }
+    return null;
+  }
+
+  function itemLink(url) {
+    var href = safeUrl(url);
+    if (!href) return null;
+    return el("p", { class: "meta-line" }, [
+      el("a", {
+        href: href,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        text: hostOf(href)
+      })
+    ]);
+  }
+
   function priceBlock(label, value) {
     return el("div", {}, [
       el("span", { class: "price-label", text: label }),
@@ -461,7 +544,7 @@
       minimumFractionDigits: digits,
       maximumFractionDigits: digits
     }).format(number);
-    return (options.approx ? "~" : "") + text;
+    return (options.approx ? "~" : "") + text + (options.plus ? "+" : "");
   }
 
   function formatCount(value) {

@@ -34,9 +34,11 @@ Owned gear that is not a gun goes in `gear` and shows in My Accessories. Use `"b
 
 `wishlist.tiers` is the priority list.
 
-- `"kind": "item"` — a single price. Use `null` when the price is unknown (shown as TBD). `status` is `Researching`, `Saving`, or `Bought`.
+- `"kind": "item"` — a single price. Use `null` when the price is unknown (shown as TBD). Optional `url` is a link. `status` is `Researching`, `Saving`, or `Bought`.
 - `"kind": "build"` — low and recommended totals, a component list, and alternate pistols. Put a component `price` only when you actually have that number.
 - `"kind": "offers"` — vendor listings. Each offer has `vendor`, `price`, and `url`.
+
+`wishlist.knownTotal.parts` is the known-price total at the top of the wishlist. Each part names an item `id` and a field: `price`, `priceLow`, `priceRecommended`, or `lowestOffer`. A missing price makes the whole total TBD. `trailingPlus` adds a plus when other items are still unknown.
 
 `wishlist.nonGlock` is the separate table of pistols that will not share magazines with the SUB-2000. `gunPrice` is the pistol; `buildEstimate` is shown with a tilde because those build totals are approximate.
 
