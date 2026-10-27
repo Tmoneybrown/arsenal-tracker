@@ -231,6 +231,7 @@
             name: alt.name,
             priceLow: alt.priceLow,
             priceRecommended: alt.priceRecommended,
+            url: alt.url,
             alternateTo: item.shortName || item.name,
             excludeFromSubtotal: true
           });
@@ -364,7 +365,15 @@
     var note = pistolAltNote(item);
     return el("article", { class: "wish-row" }, [
       el("div", { class: "wish-id" }, [
-        el("span", { class: "wish-name", text: item.name }),
+        safeUrl(item.url)
+          ? el("a", {
+            class: "wish-name",
+            href: safeUrl(item.url),
+            target: "_blank",
+            rel: "noopener noreferrer",
+            text: item.name
+          })
+          : el("span", { class: "wish-name", text: item.name }),
         item.carry && item.carry.topPick ? el("span", { class: "badge badge-olive", text: "Top pick" }) : null
       ]),
       el("div", { class: "wish-price" }, [
@@ -453,12 +462,7 @@
         priceBlock("Recommended", item.priceRecommended)
       ]));
       if (item.components && item.components.length) {
-        parts.push(el("ul", { class: "component-list" }, item.components.map(function (part) {
-          return el("li", {}, [
-            el("span", { text: part.name }),
-            part.price == null ? el("span", { class: "tag tag-tbd", text: "TBD" }) : el("span", { class: "price", text: formatMoney(part.price) })
-          ]);
-        })));
+        parts.push(renderComponentList(item.components));
       }
       if (item.priceNote) parts.push(el("p", { class: "note", text: item.priceNote }));
       var rows = [{
@@ -486,12 +490,42 @@
       if (item.caliber && note !== item.caliber) {
         parts.push(el("p", { class: "meta-line", text: item.caliber }));
       }
+      if (item.components && item.components.length) {
+        parts.push(renderComponentList(item.components));
+      }
     }
     if (!parts.length) return null;
     return el("details", { class: "wish-details" }, [
       el("summary", { text: "Details" }),
       el("div", { class: "wish-detail-body" }, parts)
     ]);
+  }
+
+  function renderComponentList(components) {
+    return el("ul", { class: "component-list" }, components.map(function (part) {
+      var href = safeUrl(part.url);
+      var name = href
+        ? el("a", { href: href, target: "_blank", rel: "noopener noreferrer", text: part.name })
+        : el("span", { text: part.name });
+      var alt = null;
+      if (part.alt && part.alt.name) {
+        var altHref = safeUrl(part.alt.url);
+        var altName = altHref
+          ? el("a", { href: altHref, target: "_blank", rel: "noopener noreferrer", text: part.alt.name })
+          : el("span", { text: part.alt.name });
+        alt = el("span", { class: "component-alt" }, [
+          "Premium alt: ",
+          altName,
+          isFiniteNumber(part.alt.price) ? " " + formatMoney(part.alt.price) : ""
+        ]);
+      }
+      return el("li", {}, [
+        el("span", { class: "component-name" }, [name, alt]),
+        part.price == null
+          ? el("span", { class: "tag tag-tbd", text: "TBD" })
+          : el("span", { class: "price", text: formatMoney(part.price) })
+      ]);
+    }));
   }
 
   function renderOfferList(item) {
@@ -711,32 +745,23 @@
           "data-known-total": "true",
           text: formatMoney(total.amount, { plus: total.plus })
         })
-        : el("span", { class: "tag tag-tbd", text: "TBD" }),
-      total.breakdown ? el("p", { class: "note", text: total.breakdown }) : null,
-      spec.note ? el("p", { class: "note", text: spec.note }) : null
+        : el("span", { class: "tag tag-tbd", text: "TBD" })
     ]);
   }
 
   function knownTotal(data) {
     var spec = data.wishlist && data.wishlist.knownTotal;
-    if (!spec || !spec.parts) return { complete: false, amount: null, plus: false, breakdown: "" };
-    var parts = [];
+    if (!spec || !spec.parts) return { complete: false, amount: null, plus: false };
+    var cents = 0;
     for (var i = 0; i < spec.parts.length; i += 1) {
-      var part = spec.parts[i];
-      var amount = partAmount(data, part);
-      if (amount == null) return { complete: false, amount: null, plus: !!spec.trailingPlus, breakdown: "" };
-      parts.push({ label: part.label, amount: amount });
+      var amount = partAmount(data, spec.parts[i]);
+      if (amount == null) return { complete: false, amount: null, plus: !!spec.trailingPlus };
+      cents += Math.round(amount * 100);
     }
-    var cents = parts.reduce(function (sum, part) {
-      return sum + Math.round(part.amount * 100);
-    }, 0);
     return {
       complete: true,
       amount: cents / 100,
-      plus: !!spec.trailingPlus,
-      breakdown: parts.map(function (part) {
-        return part.label + " " + formatMoney(part.amount);
-      }).join(" + ")
+      plus: !!spec.trailingPlus
     };
   }
 
@@ -825,6 +850,7 @@
   }
 
   function safeUrl(url) {
+    if (typeof url !== "string" || !url) return null;
     try {
       var parsed = new URL(url, window.location.href);
       if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href;
