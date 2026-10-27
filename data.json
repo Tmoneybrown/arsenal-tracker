@@ -94,23 +94,17 @@
   "wishlist": {
     "knownTotal": {
       "trailingPlus": true,
-      "note": "G47 low build, the lowest SUB-2000 price, and the trauma kit. Alternates and TBD items are not included.",
+      "note": "Known line-item prices only. The G47 uses the low build and the SUB-2000 uses the lowest offer. Alternates, non-Glock pistols, and eye protection are not included.",
       "parts": [
-        {
-          "itemId": "g47-build",
-          "field": "priceLow",
-          "label": "G47 low build"
-        },
-        {
-          "itemId": "sub2000",
-          "field": "lowestOffer",
-          "label": "SUB-2000"
-        },
-        {
-          "itemId": "trauma-kit",
-          "field": "price",
-          "label": "Trauma kit"
-        }
+        { "itemId": "ar15", "field": "price", "label": "AR-15" },
+        { "itemId": "g47-build", "field": "priceLow", "label": "G47 low build" },
+        { "itemId": "sub2000", "field": "lowestOffer", "label": "SUB-2000" },
+        { "itemId": "m88-upgrades", "field": "price", "label": "Maverick 88 upgrades" },
+        { "itemId": "gun-safe", "field": "price", "label": "Gun safe" },
+        { "itemId": "magazines", "field": "price", "label": "Magazines" },
+        { "itemId": "trauma-kit", "field": "price", "label": "Trauma kit" },
+        { "itemId": "spare-parts", "field": "price", "label": "Spare parts" },
+        { "itemId": "carrying-case", "field": "price", "label": "Carrying case" }
       ]
     },
     "tiers": [
@@ -125,7 +119,9 @@
             "name": "AR-15",
             "caliber": "5.56",
             "status": "Researching",
-            "price": null
+            "price": 669.99,
+            "url": "https://www.vanceoutdoors.com/products2.cfm/ID/303813/13807/smith-and-wesson-mp15-sport-iii-5.56-nato-rifle-with-full-length-m-lok-handguard-and-forged-trigg",
+            "summary": "S&W M&P15 Sport III at Vance Outdoors, $669.99 on sale (regular $719.99)."
           }
         ]
       },
@@ -141,27 +137,64 @@
             "shortName": "Glock 47 MOS",
             "status": "Researching",
             "planned": true,
-            "priceLow": 2033.12,
-            "priceRecommended": 2523.59,
+            "priceLow": 1962.69,
+            "priceRecommended": 2438.43,
             "components": [
               { "name": "Gun", "price": 620 },
-              { "name": "Faxon or Glock threaded barrel" },
-              { "name": "Suppressor-height sights" },
-              { "name": "Light: TLR-1 HL or Surefire X300U-A" },
-              { "name": "Red dot: Holosun 507C X2 or Trijicon RMR" },
-              { "name": "SilencerCo Omega 9K", "price": 749 }
+              {
+                "name": "Threaded barrel: Faxon Duty G17 Gen5",
+                "price": 99,
+                "url": "https://faxonfirearms.com/GA910N175NGQ-T",
+                "alt": {
+                  "name": "Glock 47697 OEM",
+                  "price": 186.82,
+                  "url": "https://v1tactical.com/product/glock-threaded-barrel-9mm/"
+                }
+              },
+              {
+                "name": "Suppressor-height sights: AmeriGlo GL-470",
+                "price": 40.71,
+                "url": "https://www.classicfirearms.com/amer-gl470-2xltall-glock-17-39-black-black/"
+              },
+              {
+                "name": "Light: Streamlight TLR-1 HL",
+                "price": 144.99,
+                "url": "https://www.primaryarms.com/streamlight-tlr1-hl-weapon-light-1000-lumens",
+                "alt": {
+                  "name": "SureFire X300U-A",
+                  "price": 341,
+                  "url": "https://www.westernsport.com/product/surefire-x300u-a-blk-1000-lm-led/"
+                }
+              },
+              {
+                "name": "Red dot: Holosun 507C X2",
+                "price": 232.99,
+                "url": "https://www.budsgunshop.com/products/optics-red-dots/holosun-hs507c-x2-2-moa-red-dot-32-moa-circle-128940",
+                "alt": {
+                  "name": "Trijicon RMR Type 2",
+                  "price": 424.9,
+                  "url": "https://gunprime.com/products/trijicon-rmr-type-2-3-25-moa-red-dot-adjustable-led-red-dot-sight-rm06-c-700672"
+                }
+              },
+              { "name": "SilencerCo Omega 9K", "price": 749 },
+              {
+                "name": "SilencerCo AC25 1/2x28 piston",
+                "price": 76,
+                "url": "https://www.blackanklemunitions.com/products/silencerco-piston-1-2x28/"
+              }
             ],
-            "priceNote": "Low and recommended figures are the full Glock 47 MOS build totals. The gun line is the current street price for a Glock 47 MOS (PA475S203MOS): $620 at dealers in October 2026, MSRP $745. The SilencerCo Omega 9K stays $749. Other parts are TBD, so the build totals are not the sum of those two lines.",
+            "priceNote": "Low $1,962.69 is the value picks: G47 MOS $620, Faxon Duty G17 Gen5 barrel $99, AmeriGlo GL-470 $40.71, TLR-1 HL $144.99, Holosun 507C X2 $232.99, Omega 9K $749, and AC25 piston $76. Recommended $2,438.43 swaps in the Glock 47697 barrel ($186.82), SureFire X300U-A ($341), and Trijicon RMR Type 2 ($424.90). G19 Gen 5 MOS is $620 at several dealers, so its totals match. G34 Gen 5 MOS is $621.99 at GrabAGun, so its low total is $1,964.68 and recommended is $2,440.42. Those alternates reuse this part stack, including the G17-length barrel price; a G19 or G34 still needs its own barrel length.",
             "alternatives": [
               {
                 "name": "Glock 34 Gen 5 MOS",
-                "priceLow": 1984.32,
-                "priceRecommended": 2512.98
+                "priceLow": 1964.68,
+                "priceRecommended": 2440.42,
+                "url": "https://grabagun.com/glock-g34-gen5-mos-9mm-luger-5-5-barrel-17-1-rounds-ndlc-steel-w-front-serrations-slide-rough-textures-and-interchangeable-backstrap-grip.html"
               },
               {
                 "name": "Glock 19 Gen 5 MOS",
-                "priceLow": 2040.12,
-                "priceRecommended": 2523.59
+                "priceLow": 1962.69,
+                "priceRecommended": 2438.43
               }
             ]
           },
@@ -189,11 +222,64 @@
             "kind": "item",
             "name": "Maverick 88 upgrades",
             "status": "Researching",
-            "price": null,
-            "details": [
-              "Weapon light",
-              "Optic",
-              "Sidesaddle"
+            "price": 904.11,
+            "summary": "Light, optic, sidesaddle, sling, and mounts. The total is the sum of the parts.",
+            "components": [
+              {
+                "name": "Streamlight TLR-1 HL",
+                "price": 144.99,
+                "url": "https://www.primaryarms.com/streamlight-tlr1-hl-weapon-light-1000-lumens"
+              },
+              {
+                "name": "Streamlight TLR remote battery door 69130",
+                "price": 46.39,
+                "url": "https://officerstore.com/Streamlight-TLR-Remote-Battery-Door-Switch-Assembly"
+              },
+              {
+                "name": "Streamlight shotgun coil remote pressure switch 69134",
+                "price": 37.59,
+                "url": "https://officerstore.com/Streamlight-TLR-Shotgun-Coil-Remote-Switch"
+              },
+              {
+                "name": "Holosun HS510C red dot",
+                "price": 309.99,
+                "url": "https://www.primaryarms.com/holosun-hs510c-hud-solar-powered-red-dot-sight-with-circle-dot-reticle"
+              },
+              {
+                "name": "Trinity saddle rail mount for Maverick 88",
+                "price": 64.91,
+                "url": "https://www.amazon.com/Trinity-Aluminum-Saddle-Maverick-Single/dp/B01EXCW4WM"
+              },
+              {
+                "name": "Mesa Tactical SureShell 6-shell sidesaddle",
+                "price": 77.49,
+                "url": "https://www.mountsplus.com/mesatactical-side-saddle-sureshell-polymer-mossberg-500-6shell.html"
+              },
+              {
+                "name": "Blue Force Gear Vickers 2-point sling (bungee version available)",
+                "price": 49.95,
+                "url": "https://blueforcegear.com/vickers-sling"
+              },
+              {
+                "name": "Magpul MAG508 forward sling mount",
+                "price": 37.95,
+                "url": "https://www.cheaperthandirt.com/magpul-forward-sling-mount-remington-870-mossberg-500590-and-maverick-88-steel-melonite-black/fc-873750007854.html"
+              },
+              {
+                "name": "Magpul AFG",
+                "price": 34.95,
+                "url": "https://magpul.com/afg-angled-fore-grip.html"
+              },
+              {
+                "name": "Magpul MBUS 3 front",
+                "price": 39.95,
+                "url": "https://magpul.com/mbus-3-sight-front.html"
+              },
+              {
+                "name": "Magpul MBUS 3 rear",
+                "price": 59.95,
+                "url": "https://magpul.com/mbus-3-sight-rear.html"
+              }
             ]
           }
         ]
@@ -208,15 +294,18 @@
             "kind": "item",
             "name": "Gun safe",
             "status": "Researching",
-            "price": null
+            "price": 799.99,
+            "url": "https://www.als.com/liberty-safe-centurion-24-gun-safe-10311076/p",
+            "summary": "Liberty Centurion 24 Deluxe."
           },
           {
             "id": "magazines",
             "kind": "item",
             "name": "Magazines",
-            "summary": "6–10 magazines per gun.",
+            "summary": "Taurus G2 9mm 12-round OEM magazine, $31.99. In-store pickup at Primary Arms, 3219 S Sam Houston Pkwy E, Houston. Only Taurus magazines are priced; that is the only owned gun that takes detachable magazines.",
             "status": "Researching",
-            "price": null
+            "price": 31.99,
+            "url": "https://www.primaryarms.com/taurus-g2c-magazine-9mm-12-round"
           },
           {
             "id": "trauma-kit",
@@ -232,7 +321,20 @@
             "kind": "item",
             "name": "Spare parts and cleaning kits",
             "status": "Researching",
-            "price": null
+            "price": 94.98,
+            "summary": "Real Avid Gun Boss Pro and a Brownells G17 Gen5 slide parts kit. The total is the sum of the parts.",
+            "components": [
+              {
+                "name": "Real Avid Gun Boss Pro",
+                "price": 39.99,
+                "url": "https://realavid.com/products/gun-boss-pro-universal-gun-cleaning-kit"
+              },
+              {
+                "name": "Brownells G17 Gen5 slide parts kit",
+                "price": 54.99,
+                "url": "https://www.brownells.com/gun-parts/handgun-parts/handgun-slides-parts/slide-parts-kit-w-billet-firing-pin-for-glock-17/?sku=430104858"
+              }
+            ]
           },
           {
             "id": "eye-protection",
@@ -246,7 +348,20 @@
             "kind": "item",
             "name": "Carrying case",
             "status": "Researching",
-            "price": null
+            "price": 179.94,
+            "summary": "Plano All Weather 2 42in long-gun case fits an assembled Maverick 88 and an AR (about $109.99 at Academy). Pelican Vault V100 is the pistol case. The total is the sum of the parts.",
+            "components": [
+              {
+                "name": "Plano All Weather 2 42in long gun case",
+                "price": 129.99,
+                "url": "https://www.planooutdoors.com/products/all-weather-2-42-long-gun-case-1595403"
+              },
+              {
+                "name": "Pelican Vault V100 pistol case",
+                "price": 49.95,
+                "url": "https://www.pelican.com/us/en/product/cases/v100"
+              }
+            ]
           }
         ]
       }
