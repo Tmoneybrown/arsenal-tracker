@@ -92,6 +92,27 @@
     }
   ],
   "wishlist": {
+    "knownTotal": {
+      "trailingPlus": true,
+      "note": "G47 low build, the lowest SUB-2000 price, and the trauma kit. Alternates and TBD items are not included.",
+      "parts": [
+        {
+          "itemId": "g47-build",
+          "field": "priceLow",
+          "label": "G47 low build"
+        },
+        {
+          "itemId": "sub2000",
+          "field": "lowestOffer",
+          "label": "SUB-2000"
+        },
+        {
+          "itemId": "trauma-kit",
+          "field": "price",
+          "label": "Trauma kit"
+        }
+      ]
+    },
     "tiers": [
       {
         "id": "tier-1",
@@ -200,9 +221,11 @@
           {
             "id": "trauma-kit",
             "kind": "item",
-            "name": "Trauma kit",
+            "name": "Trauma kit: North American Rescue IPOK (Individual Patrol Officer Kit)",
+            "summary": "Compact vacuum-sealed bleed kit: C-A-T tourniquet, wound packing gauze, 4in ETD trauma dressing, nitrile gloves. $44.99-$57.99.",
             "status": "Researching",
-            "price": null
+            "price": 57.99,
+            "url": "https://www.narescue.com/individual-patrol-officer-kit.html"
           },
           {
             "id": "spare-parts",
