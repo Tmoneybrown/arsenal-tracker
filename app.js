@@ -53,9 +53,6 @@
     if (tagline && data.meta && data.meta.tagline) {
       tagline.textContent = data.meta.tagline;
     }
-    fill("dashboard", function () {
-      return renderDashboard(data);
-    });
     fill("arsenal", function () {
       return renderArsenal(data);
     });
@@ -86,52 +83,6 @@
     } catch (error) {
       mount.append(el("p", { class: "error", text: "Could not render this section. " + error.message }));
     }
-  }
-
-  function renderDashboard(data) {
-    var owned = (data.arsenal || []).filter(function (gun) {
-      return String(gun.status || "").toLowerCase() === "owned";
-    });
-    var next = findItem(data, data.dashboard && data.dashboard.nextPlannedBuyId);
-    var total = knownTotal(data);
-
-    var grid = el("div", { class: "stat-grid" }, [
-      el("article", { class: "card" }, [
-        el("span", { class: "price-label", text: "Guns owned" }),
-        el("span", { class: "stat-value", text: String(owned.length) }),
-        el("p", {
-          class: "substat",
-          text: owned.map(function (gun) { return gun.name; }).join(" · ") || "None listed"
-        })
-      ]),
-      el("article", { class: "card" }, [
-        el("span", { class: "price-label", text: "Next planned buy" }),
-        el("span", {
-          class: "stat-value stat-text",
-          text: next ? next.name : "Not set"
-        })
-      ]),
-      el("article", { class: "card stat-span" }, [
-        el("span", { class: "price-label", text: "Wishlist total of known prices" }),
-        total.complete
-          ? el("span", {
-            class: "stat-value",
-            "data-known-total": "true",
-            text: formatMoney(total.amount, { plus: total.plus })
-          })
-          : el("span", { class: "tag tag-tbd", text: "TBD" }),
-        el("p", {
-          class: "substat",
-          text: total.breakdown || (data.dashboard && data.dashboard.knownTotal && data.dashboard.knownTotal.note) || ""
-        }),
-        el("p", {
-          class: "note",
-          text: (data.dashboard && data.dashboard.knownTotal && data.dashboard.knownTotal.note) || ""
-        })
-      ])
-    ]);
-
-    return grid;
   }
 
   function renderArsenal(data) {
@@ -488,56 +439,6 @@
     }));
   }
 
-  function knownTotal(data) {
-    var spec = data.dashboard && data.dashboard.knownTotal;
-    if (!spec || !spec.parts) return { complete: false, amount: null, plus: false, breakdown: "" };
-    var parts = [];
-    for (var i = 0; i < spec.parts.length; i += 1) {
-      var part = spec.parts[i];
-      var amount = partAmount(data, part);
-      if (amount == null) return { complete: false, amount: null, plus: !!spec.trailingPlus, breakdown: "" };
-      parts.push({ label: part.label, amount: amount });
-    }
-    var cents = parts.reduce(function (sum, part) {
-      return sum + Math.round(part.amount * 100);
-    }, 0);
-    var breakdown = parts.map(function (part) {
-      return part.label + " " + formatMoney(part.amount);
-    }).join(" + ");
-    return {
-      complete: true,
-      amount: cents / 100,
-      plus: !!spec.trailingPlus,
-      breakdown: breakdown
-    };
-  }
-
-  function partAmount(data, part) {
-    var item = findItem(data, part.itemId);
-    if (!item) return null;
-    if (part.field === "priceLow" || part.field === "priceRecommended" || part.field === "price") {
-      return isFiniteNumber(item[part.field]) ? Number(item[part.field]) : null;
-    }
-    if (part.field === "lowestOffer") {
-      var prices = (item.offers || []).map(function (offer) { return offer.price; }).filter(isFiniteNumber);
-      if (!prices.length) return null;
-      return Math.min.apply(null, prices);
-    }
-    return null;
-  }
-
-  function findItem(data, id) {
-    if (!id) return null;
-    var tiers = (data.wishlist && data.wishlist.tiers) || [];
-    for (var i = 0; i < tiers.length; i += 1) {
-      var items = tiers[i].items || [];
-      for (var j = 0; j < items.length; j += 1) {
-        if (items[j].id === id) return items[j];
-      }
-    }
-    return null;
-  }
-
   function formatMoney(value, options) {
     options = options || {};
     if (!isFiniteNumber(value)) return null;
@@ -550,7 +451,7 @@
       minimumFractionDigits: digits,
       maximumFractionDigits: digits
     }).format(number);
-    return (options.approx ? "~" : "") + text + (options.plus ? "+" : "");
+    return (options.approx ? "~" : "") + text;
   }
 
   function formatCount(value) {

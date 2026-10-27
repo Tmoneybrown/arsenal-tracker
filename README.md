@@ -28,7 +28,7 @@ Keep the file valid JSON: double quotes, no trailing commas, no comments. Array 
 
 Add or edit objects in `arsenal`. `status` should be `"Owned"` for guns on hand. `needs` is a list of missing setup items; use `[]` when there is nothing outstanding.
 
-Owned gear that is not a gun goes in `gear`. Use `"brand": null` when the brand is unknown; the page shows TBD. Gear does not count toward guns owned, and a `null` price is left out of the wishlist total.
+Owned gear that is not a gun goes in `gear`. Use `"brand": null` when the brand is unknown; the page shows TBD.
 
 ### Wishlist
 
@@ -37,8 +37,6 @@ Owned gear that is not a gun goes in `gear`. Use `"brand": null` when the brand 
 - `"kind": "item"` — a single price. Use `null` when the price is unknown (shown as TBD). `status` is `Researching`, `Saving`, or `Bought`.
 - `"kind": "build"` — low and recommended totals, a component list, and alternate pistols. Put a component `price` only when you actually have that number.
 - `"kind": "offers"` — vendor listings. Each offer has `vendor`, `price`, and `url`.
-
-The dashboard **wishlist total of known prices** is computed from `dashboard.knownTotal.parts`. Today that is the Glock 17 low build (`priceLow`) plus the lowest SUB-2000 offer. The trailing `+` means other lines are still TBD and are not in the sum. Point `nextPlannedBuyId` at the wishlist item that should show as the next buy.
 
 `wishlist.nonGlock` is the separate table of pistols that will not share magazines with the SUB-2000. `gunPrice` is the pistol; `buildEstimate` is shown with a tilde because those build totals are approximate.
 
