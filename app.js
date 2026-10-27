@@ -56,6 +56,9 @@
     fill("arsenal", function () {
       return renderArsenal(data);
     });
+    fill("accessories", function () {
+      return renderAccessories(data);
+    });
     fill("ammo", function () {
       return renderAmmo(data);
     });
@@ -87,11 +90,18 @@
 
   function renderArsenal(data) {
     var guns = data.arsenal || [];
-    var gear = data.gear || [];
-    if (!guns.length && !gear.length) {
+    if (!guns.length) {
       return el("p", { class: "prose", text: "No owned guns entered." });
     }
-    return el("div", { class: "cards cols-2" }, guns.map(renderGun).concat(gear.map(renderGear)));
+    return el("div", { class: "cards cols-2" }, guns.map(renderGun));
+  }
+
+  function renderAccessories(data) {
+    var gear = data.gear || [];
+    if (!gear.length) {
+      return el("p", { class: "prose", text: "No accessories entered." });
+    }
+    return el("div", { class: "cards cols-2" }, gear.map(renderGear));
   }
 
   function renderGear(item) {
