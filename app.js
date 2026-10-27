@@ -195,124 +195,329 @@
     var total = renderKnownTotal(data);
     if (total) root.append(total);
     (data.wishlist.tiers || []).forEach(function (tier) {
-      var items = tier.items || [];
-      var wide = items.some(function (item) { return item.kind === "build"; });
-      root.append(el("section", { class: "tier", "aria-label": tier.label + " " + tier.name }, [
-        el("p", { class: "tier-kicker", text: tier.label }),
-        el("h3", { text: tier.name }),
-        el("div", { class: wide ? "stack" : "cards cols-auto" }, items.map(renderWishItem))
-      ]));
+      var items = (tier.items || []).filter(function (item) { return !isPistolWishItem(item); });
+      if (!items.length) return;
+      root.append(renderWishGroup(
+        tier.label + " " + tier.name,
+        items,
+        itemKnownPrice,
+        renderWishRow
+      ));
     });
-    root.append(renderNonGlock(data.wishlist.nonGlock));
+    var pistols = collectPistols(data);
+    if (pistols.length) {
+      root.append(renderWishGroup("Pistols", pistols, pistolRowPrice, renderPistolRow));
+    }
     return root;
   }
 
-  function renderWishItem(item) {
-    if (item.kind === "build") return renderBuild(item);
-    if (item.kind === "offers") return renderOffers(item);
-    return renderSimpleItem(item);
+  function isPistolWishItem(item) {
+    if (!item || item.kind !== "build") return false;
+    var name = ((item.shortName || "") + " " + (item.name || "")).toLowerCase();
+    return !/rifle|shotgun|carbine|ar-15|sub-2000/.test(name);
   }
 
-  function renderSimpleItem(item) {
-    return el("article", { class: "card" }, [
-      el("div", { class: "card-top" }, [
-        el("h4", { class: "card-title", text: item.name }),
-        statusTag(item.status)
-      ]),
-      item.caliber ? el("p", { class: "meta-line", text: item.caliber }) : null,
-      el("p", { class: "price-line" }, [moneyNode(item.price)]),
-      item.summary ? el("p", { class: "prose", text: item.summary }) : null,
-      itemLink(item.url),
-      item.details && item.details.length ? list(item.details) : null
+  function collectPistols(data) {
+    var builds = [];
+    var alts = [];
+    (data.wishlist.tiers || []).forEach(function (tier) {
+      (tier.items || []).forEach(function (item) {
+        if (!isPistolWishItem(item)) return;
+        builds.push(item);
+        (item.alternatives || []).forEach(function (alt) {
+          if (!alt || !alt.name) return;
+          alts.push({
+            kind: "pistol-alt",
+            name: alt.name,
+            priceLow: alt.priceLow,
+            priceRecommended: alt.priceRecommended,
+            alternateTo: item.shortName || item.name,
+            excludeFromSubtotal: true
+          });
+        });
+      });
+    });
+    ((data.carry && data.carry.contenders) || []).forEach(function (gun) {
+      if (!gun || !gun.name) return;
+      var match = null;
+      alts.concat(builds).forEach(function (row) {
+        if (sameGun(row.name, gun.name) || sameGun(row.shortName, gun.name)) match = row;
+      });
+      if (match) match.carry = gun;
+    });
+    alts.sort(function (a, b) {
+      var ap = a.carry && a.carry.topPick ? 0 : 1;
+      var bp = b.carry && b.carry.topPick ? 0 : 1;
+      return ap - bp;
+    });
+    var others = ((data.wishlist.nonGlock && data.wishlist.nonGlock.items) || []).map(function (item) {
+      return {
+        kind: "non-glock",
+        name: item.name,
+        gunPrice: item.gunPrice,
+        buildEstimate: item.buildEstimate
+      };
+    });
+    return builds.concat(alts, others);
+  }
+
+  function pistolRowPrice(item) {
+    if (!item || item.excludeFromSubtotal) return null;
+    if (item.kind === "build" || item.kind === "pistol-alt") {
+      return isFiniteNumber(item.priceLow) ? item.priceLow : null;
+    }
+    if (item.kind === "non-glock") return isFiniteNumber(item.gunPrice) ? item.gunPrice : null;
+    return itemKnownPrice(item);
+  }
+
+  function renderWishGroup(title, items, priceOf, renderRow) {
+    var sub = groupSubtotal(items, priceOf);
+    return el("section", { class: "wish-group", "aria-label": title }, [
+      el("h3", { class: "wish-heading", text: title }),
+      el("div", { class: "wish-rows" }, items.map(renderRow)),
+      el("p", { class: "wish-subtotal" }, [
+        el("span", { text: "Subtotal" }),
+        sub.complete
+          ? el("span", { class: "price", text: formatMoney(sub.amount, { plus: sub.plus }) })
+          : el("span", { class: "tag tag-tbd", text: "TBD" })
+      ])
     ]);
   }
 
-  function renderBuild(item) {
-    var rows = [{
-      name: item.shortName || item.name,
-      priceLow: item.priceLow,
-      priceRecommended: item.priceRecommended,
-      planned: true
-    }].concat(item.alternatives || []);
-    return el("article", { class: "card" + (item.planned ? " top-pick" : "") }, [
-      el("div", { class: "card-top" }, [
-        el("h4", { class: "card-title", text: item.name }),
-        statusTag(item.status)
+  function groupSubtotal(items, priceOf) {
+    var cents = 0;
+    var known = 0;
+    var missing = false;
+    items.forEach(function (item) {
+      if (item && item.excludeFromSubtotal) return;
+      var amount = priceOf(item);
+      if (amount == null) {
+        missing = true;
+        return;
+      }
+      known += 1;
+      cents += Math.round(amount * 100);
+    });
+    if (!known) return { complete: false, amount: null, plus: false };
+    return { complete: true, amount: cents / 100, plus: missing };
+  }
+
+  function itemKnownPrice(item) {
+    if (!item) return null;
+    if (item.kind === "build") return isFiniteNumber(item.priceLow) ? item.priceLow : null;
+    if (item.kind === "offers") return lowestOfferPrice(item);
+    return isFiniteNumber(item.price) ? item.price : null;
+  }
+
+  function lowestOfferPrice(item) {
+    var offer = lowestOffer(item);
+    return offer ? offer.price : null;
+  }
+
+  function lowestOffer(item) {
+    var best = null;
+    (item.offers || []).forEach(function (offer) {
+      if (!isFiniteNumber(offer.price)) return;
+      if (!best || offer.price < best.price) best = offer;
+    });
+    return best;
+  }
+
+  function renderWishRow(item) {
+    var price = itemKnownPrice(item);
+    var href = wishHref(item);
+    var note = wishNote(item);
+    var name = href
+      ? el("a", {
+        class: "wish-name",
+        href: href,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        text: item.name
+      })
+      : el("span", { class: "wish-name", text: item.name });
+    return el("article", { class: "wish-row" }, [
+      el("div", { class: "wish-id" }, [
+        name,
+        statusTag(item.status),
+        item.planned ? el("span", { class: "tag tag-olive", text: "Planned" }) : null
       ]),
-      item.planned ? el("p", { class: "meta-line", text: "Next planned buy" }) : null,
-      el("div", { class: "price-pair" }, [
-        priceBlock("Low", item.priceLow),
-        priceBlock("Recommended", item.priceRecommended)
+      el("div", { class: "wish-price" }, [
+        price == null
+          ? el("span", { class: "tag tag-tbd", text: "TBD" })
+          : el("span", { class: "price", text: formatMoney(price) }),
+        rowPriceLabel(item, price)
       ]),
-      el("ul", { class: "component-list" }, (item.components || []).map(function (part) {
-        return el("li", {}, [
-          el("span", { text: part.name }),
-          part.price == null ? el("span", { class: "tag tag-tbd", text: "TBD" }) : el("span", { class: "price", text: formatMoney(part.price) })
-        ]);
-      })),
-      item.priceNote ? el("p", { class: "note", text: item.priceNote }) : null,
-      rows.length > 1 ? el("h4", { class: "needs-label", text: "Alternate pistols, build totals" }) : null,
-      rows.length > 1 ? buildTable(rows) : null
+      note ? el("p", { class: "wish-note", text: note }) : null,
+      wishDetails(item, note)
     ]);
   }
 
-  function renderOffers(item) {
-    var prices = (item.offers || []).map(function (offer) { return offer.price; }).filter(isFiniteNumber);
-    var lowest = prices.length ? Math.min.apply(null, prices) : null;
-    return el("article", { class: "card" }, [
-      el("div", { class: "card-top" }, [
-        el("h4", { class: "card-title", text: item.name }),
-        statusTag(item.status)
+  function renderPistolRow(item) {
+    if (item.kind === "build") return renderWishRow(item);
+    if (item.kind === "pistol-alt") return renderPistolAltRow(item);
+    return renderNonGlockRow(item);
+  }
+
+  function renderPistolAltRow(item) {
+    var price = isFiniteNumber(item.priceLow) ? item.priceLow : null;
+    var note = pistolAltNote(item);
+    return el("article", { class: "wish-row" }, [
+      el("div", { class: "wish-id" }, [
+        el("span", { class: "wish-name", text: item.name }),
+        item.carry && item.carry.topPick ? el("span", { class: "badge badge-olive", text: "Top pick" }) : null
       ]),
-      item.summary ? el("p", { class: "prose", text: item.summary }) : null,
-      el("div", { class: "offer-list" }, (item.offers || []).map(function (offer) {
-        var href = safeUrl(offer.url);
-        var body = [
-          el("span", {}, [
-            el("span", { class: "offer-vendor", text: offer.vendor }),
-            href ? el("span", { class: "offer-host", text: hostOf(href) }) : null
-          ]),
-          el("span", { class: "offer-price" }, [
-            moneyNode(offer.price),
-            lowest != null && offer.price === lowest
-              ? el("span", { class: "tag tag-olive", text: "Lowest listed" })
-              : null
+      el("div", { class: "wish-price" }, [
+        price == null
+          ? el("span", { class: "tag tag-tbd", text: "TBD" })
+          : el("span", { class: "price", text: formatMoney(price) }),
+        price == null ? null : el("span", { class: "price-label", text: "Low" })
+      ]),
+      note ? el("p", { class: "wish-note", text: note }) : null,
+      el("details", { class: "wish-details" }, [
+        el("summary", { text: "Details" }),
+        el("div", { class: "wish-detail-body" }, [
+          el("div", { class: "price-pair" }, [
+            priceBlock("Low", item.priceLow),
+            priceBlock("Recommended", item.priceRecommended)
           ])
-        ];
-        if (!href) return el("div", { class: "offer-row" }, body);
-        return el("a", {
-          class: "offer-row",
-          href: href,
-          target: "_blank",
-          rel: "noopener noreferrer"
-        }, body);
-      }))
-    ]);
-  }
-
-  function renderNonGlock(block) {
-    if (!block) return null;
-    return el("section", { class: "tier", "aria-label": block.title }, [
-      el("h3", { text: block.title }),
-      el("div", { class: "table-scroll" }, [
-        el("table", {}, [
-          el("thead", {}, [
-            el("tr", {}, [
-              el("th", { scope: "col", text: "Pistol" }),
-              el("th", { scope: "col", text: "Gun price" }),
-              el("th", { scope: "col", text: "Approx. build" })
-            ])
-          ]),
-          el("tbody", {}, (block.items || []).map(function (item) {
-            return el("tr", {}, [
-              el("th", { scope: "row", text: item.name }),
-              el("td", {}, [moneyNode(item.gunPrice)]),
-              el("td", {}, [moneyNode(item.buildEstimate, { approx: true })])
-            ]);
-          }))
         ])
       ])
     ]);
+  }
+
+  function pistolAltNote(item) {
+    var bits = [];
+    if (item.carry && item.carry.topPick) bits.push("Carry top pick");
+    else if (item.carry) bits.push("Carry option");
+    if (item.alternateTo) bits.push("Alternate to the " + item.alternateTo);
+    return bits.join(". ") + (bits.length ? "." : "");
+  }
+
+  function renderNonGlockRow(item) {
+    var note = "Doesn't share mags with the SUB-2000.";
+    if (isFiniteNumber(item.buildEstimate)) {
+      note += " Approx. build " + formatMoney(item.buildEstimate, { approx: true }) + ".";
+    }
+    return el("article", { class: "wish-row" }, [
+      el("div", { class: "wish-id" }, [
+        el("span", { class: "wish-name", text: item.name })
+      ]),
+      el("div", { class: "wish-price" }, [
+        isFiniteNumber(item.gunPrice)
+          ? el("span", { class: "price", text: formatMoney(item.gunPrice) })
+          : el("span", { class: "tag tag-tbd", text: "TBD" }),
+        isFiniteNumber(item.gunPrice) ? el("span", { class: "price-label", text: "Gun" }) : null
+      ]),
+      el("p", { class: "wish-note", text: note })
+    ]);
+  }
+
+  function rowPriceLabel(item, price) {
+    if (price == null) return null;
+    if (item.kind === "build") return el("span", { class: "price-label", text: "Low" });
+    if (item.kind === "offers") return el("span", { class: "price-label", text: "Lowest" });
+    return null;
+  }
+
+  function wishHref(item) {
+    if (item.kind === "offers") {
+      var best = lowestOffer(item);
+      return best ? safeUrl(best.url) : null;
+    }
+    return safeUrl(item.url);
+  }
+
+  function wishNote(item) {
+    if (item.kind === "build") return item.planned ? "Next planned buy" : "";
+    if (item.summary) return firstSentence(item.summary);
+    if (item.caliber) return item.caliber;
+    if (item.details && item.details.length) return item.details.join(", ");
+    return "";
+  }
+
+  function firstSentence(text) {
+    var trimmed = String(text || "").trim();
+    if (!trimmed) return "";
+    var match = trimmed.match(/^.+?[.!?](?=\s|$)/);
+    var sentence = match ? match[0] : trimmed;
+    if (sentence.length > 140) return sentence.slice(0, 137).trim() + "…";
+    return sentence;
+  }
+
+  function wishDetails(item, note) {
+    var parts = [];
+    if (item.kind === "build") {
+      parts.push(el("div", { class: "price-pair" }, [
+        priceBlock("Low", item.priceLow),
+        priceBlock("Recommended", item.priceRecommended)
+      ]));
+      if (item.components && item.components.length) {
+        parts.push(el("ul", { class: "component-list" }, item.components.map(function (part) {
+          return el("li", {}, [
+            el("span", { text: part.name }),
+            part.price == null ? el("span", { class: "tag tag-tbd", text: "TBD" }) : el("span", { class: "price", text: formatMoney(part.price) })
+          ]);
+        })));
+      }
+      if (item.priceNote) parts.push(el("p", { class: "note", text: item.priceNote }));
+      var rows = [{
+        name: item.shortName || item.name,
+        priceLow: item.priceLow,
+        priceRecommended: item.priceRecommended,
+        planned: true
+      }].concat(item.alternatives || []);
+      if (rows.length > 1) {
+        parts.push(el("h4", { class: "needs-label", text: "Alternate pistols, build totals" }));
+        parts.push(buildTable(rows));
+      }
+    } else if (item.kind === "offers") {
+      if (item.summary && item.summary.trim() !== note) {
+        parts.push(el("p", { class: "prose", text: item.summary }));
+      }
+      parts.push(renderOfferList(item));
+    } else {
+      if (item.summary && item.summary.trim() !== note) {
+        parts.push(el("p", { class: "prose", text: item.summary }));
+      }
+      if (item.details && item.details.length && item.details.join(", ") !== note) {
+        parts.push(list(item.details));
+      }
+      if (item.caliber && note !== item.caliber) {
+        parts.push(el("p", { class: "meta-line", text: item.caliber }));
+      }
+    }
+    if (!parts.length) return null;
+    return el("details", { class: "wish-details" }, [
+      el("summary", { text: "Details" }),
+      el("div", { class: "wish-detail-body" }, parts)
+    ]);
+  }
+
+  function renderOfferList(item) {
+    var lowest = lowestOfferPrice(item);
+    return el("div", { class: "offer-list" }, (item.offers || []).map(function (offer) {
+      var href = safeUrl(offer.url);
+      var body = [
+        el("span", {}, [
+          el("span", { class: "offer-vendor", text: offer.vendor }),
+          href ? el("span", { class: "offer-host", text: hostOf(href) }) : null
+        ]),
+        el("span", { class: "offer-price" }, [
+          moneyNode(offer.price),
+          lowest != null && offer.price === lowest
+            ? el("span", { class: "tag tag-olive", text: "Lowest listed" })
+            : null
+        ])
+      ];
+      if (!href) return el("div", { class: "offer-row" }, body);
+      return el("a", {
+        class: "offer-row",
+        href: href,
+        target: "_blank",
+        rel: "noopener noreferrer"
+      }, body);
+    }));
   }
 
   function renderCarry(data) {
@@ -353,6 +558,14 @@
     (map.groups || []).forEach(function (group) {
       groups[group.id] = group;
     });
+    var ownedNames = ownedGunNames(data);
+    var wishNames = wishlistGunNames(data);
+    var owned = [];
+    var wished = [];
+    (map.rows || []).forEach(function (row) {
+      if (namesMatch(row.gun, ownedNames)) owned.push(row);
+      else if (namesMatch(row.gun, wishNames)) wished.push(row);
+    });
     return el("div", { class: "stack" }, [
       map.intro ? el("p", { class: "lead", text: map.intro }) : null,
       el("div", { class: "legend" }, (map.groups || []).map(function (group) {
@@ -361,28 +574,92 @@
           el("span", { text: group.detail || "" })
         ]);
       })),
-      el("div", { class: "table-scroll" }, [
-        el("table", {}, [
-          el("thead", {}, [
-            el("tr", {}, ["Gun", "Group", "Status", "Caliber", "Magazine type", "Shares mags with", "Shares ammo with"].map(function (label) {
-              return el("th", { scope: "col", text: label });
-            }))
-          ]),
-          el("tbody", {}, (map.rows || []).map(function (row) {
-            var group = groups[row.group] || { label: row.group || "", tone: "tan" };
-            return el("tr", {}, [
-              el("th", { scope: "row", text: row.gun }),
-              el("td", {}, [groupTag(group)]),
-              el("td", {}, [statusTag(row.status)]),
-              el("td", { text: row.caliber }),
-              el("td", { text: row.magazine }),
-              el("td", { text: row.sharesMagsWith }),
-              el("td", { text: row.sharesAmmoWith })
-            ]);
+      renderMagBlock("Owned", "mag-owned", owned, groups),
+      renderMagBlock("Wishlist", "mag-wishlist", wished, groups)
+    ]);
+  }
+
+  function renderMagBlock(title, id, rows, groups) {
+    return el("section", { class: "map-block", "aria-labelledby": id }, [
+      el("h3", { id: id, text: title }),
+      rows.length
+        ? magTable(rows, groups)
+        : el("p", { class: "prose", text: "None listed." })
+    ]);
+  }
+
+  function magTable(rows, groups) {
+    return el("div", { class: "table-scroll" }, [
+      el("table", {}, [
+        el("thead", {}, [
+          el("tr", {}, ["Gun", "Group", "Caliber", "Magazine", "Shares mags with"].map(function (label) {
+            return el("th", { scope: "col", text: label });
           }))
-        ])
+        ]),
+        el("tbody", {}, rows.map(function (row) {
+          var group = groups[row.group] || { label: row.group || "", tone: "tan" };
+          return el("tr", {}, [
+            el("th", { scope: "row", text: row.gun }),
+            el("td", {}, [groupTag(group)]),
+            el("td", { text: row.caliber }),
+            el("td", { text: row.magazine }),
+            el("td", { text: row.sharesMagsWith })
+          ]);
+        }))
       ])
     ]);
+  }
+
+  function ownedGunNames(data) {
+    return (data.arsenal || []).filter(function (gun) {
+      return String(gun.status || "").toLowerCase() === "owned";
+    }).map(function (gun) { return gun.name; });
+  }
+
+  function wishlistGunNames(data) {
+    var names = [];
+    var listed = [];
+    ((data.wishlist && data.wishlist.tiers) || []).forEach(function (tier) {
+      (tier.items || []).forEach(function (item) {
+        if (item.name) listed.push(item.name);
+        if (item.shortName) listed.push(item.shortName);
+        (item.alternatives || []).forEach(function (alt) {
+          if (alt && alt.name) listed.push(alt.name);
+        });
+        if (isWishlistFirearm(item)) {
+          if (item.shortName) names.push(item.shortName);
+          if (item.name) names.push(item.name);
+        }
+      });
+    });
+    ((data.carry && data.carry.contenders) || []).forEach(function (gun) {
+      if (gun && gun.name && namesMatch(gun.name, listed)) names.push(gun.name);
+    });
+    return names;
+  }
+
+  function isWishlistFirearm(item) {
+    if (!item) return false;
+    if (item.kind === "build" || item.kind === "offers") return true;
+    return !!item.caliber;
+  }
+
+  function namesMatch(name, list) {
+    return list.some(function (other) { return sameGun(name, other); });
+  }
+
+  function sameGun(a, b) {
+    var x = normGun(a);
+    var y = normGun(b);
+    if (!x || !y) return false;
+    if (x === y) return true;
+    var shorter = x.length <= y.length ? x : y;
+    var longer = x.length <= y.length ? y : x;
+    return (" " + longer + " ").indexOf(" " + shorter + " ") !== -1;
+  }
+
+  function normGun(value) {
+    return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   }
 
   function renderNotes(data) {
@@ -487,19 +764,6 @@
       }
     }
     return null;
-  }
-
-  function itemLink(url) {
-    var href = safeUrl(url);
-    if (!href) return null;
-    return el("p", { class: "meta-line" }, [
-      el("a", {
-        href: href,
-        target: "_blank",
-        rel: "noopener noreferrer",
-        text: hostOf(href)
-      })
-    ]);
   }
 
   function priceBlock(label, value) {
