@@ -28,7 +28,7 @@ Keep the file valid JSON: double quotes, no trailing commas, no comments. Array 
 
 Add or edit objects in `arsenal`. `status` should be `"Owned"` for guns on hand. `needs` is a list of missing setup items; use `[]` when there is nothing outstanding.
 
-Owned gear that is not a gun goes in `gear`. Use `"brand": null` when the brand is unknown; the page shows TBD.
+Owned gear that is not a gun goes in `gear` and shows in My Accessories. Use `"brand": null` when the brand is unknown; the page shows TBD. Parts mounted on a gun stay in that gun's `details`, not in `gear`.
 
 ### Wishlist
 
