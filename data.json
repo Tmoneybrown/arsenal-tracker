@@ -4,25 +4,6 @@
     "tagline": "Owned guns, ammo on hand, and the purchase list.",
     "ammoGoalDefault": 1000
   },
-  "dashboard": {
-    "nextPlannedBuyId": "g17-build",
-    "knownTotal": {
-      "trailingPlus": true,
-      "note": "G17 low build plus the lowest SUB-2000 price. Alternates and TBD items are not included.",
-      "parts": [
-        {
-          "itemId": "g17-build",
-          "field": "priceLow",
-          "label": "G17 low build"
-        },
-        {
-          "itemId": "sub2000",
-          "field": "lowestOffer",
-          "label": "SUB-2000"
-        }
-      ]
-    }
-  },
   "arsenal": [
     {
       "id": "taurus-g2",
