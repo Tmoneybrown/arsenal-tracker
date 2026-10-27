@@ -240,6 +240,13 @@
             "name": "Eye protection",
             "status": "Researching",
             "price": null
+          },
+          {
+            "id": "carrying-case",
+            "kind": "item",
+            "name": "Carrying case",
+            "status": "Researching",
+            "price": null
           }
         ]
       }

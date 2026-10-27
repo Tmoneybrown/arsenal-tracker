@@ -711,32 +711,23 @@
           "data-known-total": "true",
           text: formatMoney(total.amount, { plus: total.plus })
         })
-        : el("span", { class: "tag tag-tbd", text: "TBD" }),
-      total.breakdown ? el("p", { class: "note", text: total.breakdown }) : null,
-      spec.note ? el("p", { class: "note", text: spec.note }) : null
+        : el("span", { class: "tag tag-tbd", text: "TBD" })
     ]);
   }
 
   function knownTotal(data) {
     var spec = data.wishlist && data.wishlist.knownTotal;
-    if (!spec || !spec.parts) return { complete: false, amount: null, plus: false, breakdown: "" };
-    var parts = [];
+    if (!spec || !spec.parts) return { complete: false, amount: null, plus: false };
+    var cents = 0;
     for (var i = 0; i < spec.parts.length; i += 1) {
-      var part = spec.parts[i];
-      var amount = partAmount(data, part);
-      if (amount == null) return { complete: false, amount: null, plus: !!spec.trailingPlus, breakdown: "" };
-      parts.push({ label: part.label, amount: amount });
+      var amount = partAmount(data, spec.parts[i]);
+      if (amount == null) return { complete: false, amount: null, plus: !!spec.trailingPlus };
+      cents += Math.round(amount * 100);
     }
-    var cents = parts.reduce(function (sum, part) {
-      return sum + Math.round(part.amount * 100);
-    }, 0);
     return {
       complete: true,
       amount: cents / 100,
-      plus: !!spec.trailingPlus,
-      breakdown: parts.map(function (part) {
-        return part.label + " " + formatMoney(part.amount);
-      }).join(" + ")
+      plus: !!spec.trailingPlus
     };
   }
 
